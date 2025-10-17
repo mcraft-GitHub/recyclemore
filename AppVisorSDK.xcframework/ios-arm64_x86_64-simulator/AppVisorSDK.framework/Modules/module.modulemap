@@ -1,0 +1,11 @@
+framework module AppVisorSDK {
+  umbrella header "AppVisorSDK.h"
+  export *
+
+  module * { export * }
+}
+
+module AppVisorSDK.Swift {
+  header "AppVisorSDK-Swift.h"
+  requires objc
+}
