@@ -55,6 +55,7 @@ struct WebView: UIViewRepresentable {
 struct HybridWebView: UIViewRepresentable {
     let url: URL
     let onCustomEvent: (String, [String: Any]?) -> Void  // イベント通知用
+    @Binding var UIwebView: WKWebView?  // ← SwiftUI 側でwebViewに触れるように引き渡す
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -69,6 +70,10 @@ struct HybridWebView: UIViewRepresentable {
         
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = context.coordinator
+        // ✅ Binding の更新は非同期で行う
+        DispatchQueue.main.async {
+            self.UIwebView = webView
+        }
         webView.load(URLRequest(url: url))
         return webView
     }
@@ -117,6 +122,23 @@ struct HybridWebView: UIViewRepresentable {
                 return
             }
             decisionHandler(.allow)
+        }
+        
+        // webView内のページの読み込みが完了したタイミングで実行される
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            //開いているURLを確認
+            guard let currentURL = webView.url?.absoluteString else {
+                    print("URLが取れなかった") // そんなことがあるかは知らぬ
+                    return
+                }
+            
+            let targetURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php"
+            
+            // 特定のURLだった場合はページ内のJSを実行する処理を呼ぶ
+            if(currentURL == targetURL)
+            {
+                parent.onCustomEvent("first",nil)
+            }
         }
     }
 }

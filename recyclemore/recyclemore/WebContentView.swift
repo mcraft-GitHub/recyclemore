@@ -6,16 +6,19 @@
 //
 
 import SwiftUI
+import WebKit
 
 // 実質的な本体機能はここ(WebViewの中)、URLを指定しwebページを表示する
 struct WebContentView: View {
     
     @Binding var currentView: AppViewMode
+    @State private var webView: WKWebView? = nil  // ← WebViewを保持
     
     var body: some View {
         HybridWebView(url: URL(string: MultiViewURL)!,
                       onCustomEvent: { action, params in handleWebEvent(action: action, params: params)
-        }
+        },
+                      UIwebView: $webView
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         //https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php
@@ -47,6 +50,21 @@ struct WebContentView: View {
             
         case "member":
             print("輝度")
+        case "first":
+            print("JS")
+            // ここでページ内のJSを呼び出す
+            let token = "abc123"
+            let email = "test@example.com"
+            
+            // 関数名やら引数やらを指定
+            let jsCode = "window.setDeviceInfo('\(token)', '\(email)', '\(APP_VERSION)')"
+                webView?.evaluateJavaScript(jsCode) { result, error in
+                    if let error = error {
+                        print("JS 実行エラー: \(error)")
+                    } else {
+                        print("setDeviceInfo 呼び出し成功")
+                    }
+                }
         default:
             print("なんかされた")
         }
