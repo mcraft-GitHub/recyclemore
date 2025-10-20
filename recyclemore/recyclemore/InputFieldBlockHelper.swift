@@ -13,6 +13,7 @@ struct InputFieldBlock: View {
     @Binding var text:String    //入力値
     let errorMessage: String?   //エラーメッセージ
     var isSecure:Bool = false   //秘匿性の有無
+    @State private var isHidden: Bool = true    // パスワードのチラ見せ用
     
     // エラーメッセージの存在をチェック
     var hasError: Bool {
@@ -33,15 +34,58 @@ struct InputFieldBlock: View {
                 
                 // 隠す必要があるデータの場合は黒丸表示になる入力欄を使用する
                 if(isSecure) {
-                    SecureField("",text:$text)
-                        .frame(height: 40)
-                        .background(RoundedRectangle(cornerRadius: 0).fill(hasError ? Color(hex: "#FFF3F3") : Color.white))
+                    HStack {
+                        Group {
+                            if isHidden {
+                                SecureField("", text: $text)
+                                    .frame(height: 40)
+                                    .background(RoundedRectangle(cornerRadius: 0).fill(hasError ? Color(hex: "#FFF3F3") : Color.white))
+                            } else {
+                                TextField("", text: $text)
+                                    .frame(height: 40)
+                                    .background(RoundedRectangle(cornerRadius: 0).fill(hasError ? Color(hex: "#FFF3F3") : Color.white))
+                            }
+                        }
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                        // トグルで変えるならこっち
+                        /*
+                        Button(action: {
+                            isOpen.toggle()
+                        }) {
+                            Image(systemName: isHidden ? "eye.slash" : "eye")
+                                .foregroundColor(.gray)
+                                .background(.white)
+                        }
+                        .buttonStyle(.plain)
+                        */
+                        
+                        // 押してる間だけ見えるならこっち
+                        Image(systemName: "eye")
+                                .foregroundColor(.gray)
+                                .gesture(
+                                    DragGesture(minimumDistance: 0)
+                                        .onChanged { _ in
+                                            if isHidden {
+                                                isHidden = false
+                                            }
+                                        }
+                                        .onEnded { _ in
+                                            isHidden = true
+                                        }
+                                )
+                    }
+                    .padding(.horizontal, 8)
+                    .frame(height: 40)
+                    .background(hasError ? Color(hex: "#FFF3F3") : Color.white)
                 }
                 else
                 {
                     TextField("",text:$text)
                         .frame(height: 40)
                         .background(RoundedRectangle(cornerRadius: 0).fill(hasError ? Color(hex: "#FFF3F3") : Color.white))
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
                 }
             }
             
