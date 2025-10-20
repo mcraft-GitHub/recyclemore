@@ -48,8 +48,21 @@ struct WebContentView: View {
             print("ログイン")
             currentView = .login
             
+        case "logout":
+            print("ログアウト")
+            // 参照用ユーザー情報を削除
+            SharedUserData.userData = nil
+            // 端末に保存しているログイン情報を削除
+            KeychainHelper.shared.delete(key: "token")
+            KeychainHelper.shared.delete(key: "email")
+            
+        case "regist":
+            print("新規登録")
+            // TODO:パラメーターを使って初回ログインAPIを実行する
+            
         case "member":
             print("輝度")
+            
         case "first":
             print("JS")
             // ここでページ内のJSを呼び出す
