@@ -11,6 +11,7 @@ import SwiftUI
 struct LoginInputSectionView: View {
     @Binding var email: String
     @Binding var password: String
+    @Binding var currentView: AppViewMode
     var emailError: String?
     var passwordError: String?
     
@@ -31,6 +32,12 @@ struct LoginInputSectionView: View {
                         .font(.system(size: 14,weight: .bold))
                 }
                 .frame(maxWidth: .infinity)
+                .onTapGesture {
+                    print("パスワードを忘れた方がタップされた")
+                    // TODO:パスワード再設置画面のURLを設定する
+                    MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest3.php"
+                    currentView = .web
+                }
             }
             .padding(.horizontal, 20)
         }
@@ -38,5 +45,5 @@ struct LoginInputSectionView: View {
 }
 
 #Preview {
-    LoginInputSectionView(email: .constant("アドレス"), password: .constant("password"))
+    LoginInputSectionView(email: .constant("アドレス"), password: .constant("password"),currentView: .constant(.login))
 }
