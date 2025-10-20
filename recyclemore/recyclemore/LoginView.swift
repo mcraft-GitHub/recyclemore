@@ -238,15 +238,16 @@ struct LoginView: View {
                 await MainActor.run {
                     print("ログイン失敗")
                     // TODO:エラーコードに応じてエラーモーダルを分岐する
+                    /*
                     errorMessage = "ログインに失敗しました\nメールアドレスとパスワードをお確かめください"
                     errorCode = "エラーコード：001"
                     modalType = .close
-                    isShowingModal = true
-                    /*
+                    isShowingModal = true*/
+                    
                     print("仮成功模擬")
                     MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest2.php"
                     currentView = .web
-                     */
+                     
                 }
             }
         }

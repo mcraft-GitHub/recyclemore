@@ -10,23 +10,12 @@ import SwiftUI
 // アプリ本体、RootViewで画面を切り替えて表示内容を変える構造をしている
 @main
 struct recyclemoreApp: App {
-    @State private var isActive = false
     @StateObject private var appState = AppState()
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
         WindowGroup {
-            /*
-            if isActive {
-                //MainView()
-                //WebContentView(currentView:  .constant(.web))
-                //BrightnessView()
-            }
-            else{
-                //SplashView(currentView: .constant(.splash))
-            }
-            */
             RootView()
         }
     }

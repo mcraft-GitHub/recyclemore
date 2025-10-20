@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		2585C1F12E94E2B500CED49B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2585C1F02E94E2B500CED49B /* LaunchScreen.storyboard */; };
-		25A7DD0B2E9E14BC001C019E /* AppVisorSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A7DD0A2E9E14BC001C019E /* AppVisorSDK.xcframework */; };
-		25A7DD0C2E9E14BC001C019E /* AppVisorSDK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 25A7DD0A2E9E14BC001C019E /* AppVisorSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		25AADEE22EA21246001EACAA /* AppVisorSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25AADEE12EA21245001EACAA /* AppVisorSDK.xcframework */; };
+		25AADEE32EA21246001EACAA /* AppVisorSDK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 25AADEE12EA21245001EACAA /* AppVisorSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,13 +30,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		25A7DD0D2E9E14BC001C019E /* Embed Frameworks */ = {
+		25AADEE42EA21246001EACAA /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				25A7DD0C2E9E14BC001C019E /* AppVisorSDK.xcframework in Embed Frameworks */,
+				25AADEE32EA21246001EACAA /* AppVisorSDK.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -48,7 +48,7 @@
 		2585C1D12E94DBE600CED49B /* recyclemoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = recyclemoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2585C1DB2E94DBE600CED49B /* recyclemoreUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = recyclemoreUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2585C1F02E94E2B500CED49B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		25A7DD0A2E9E14BC001C019E /* AppVisorSDK.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:C2A82W67LB:bravesoft inc."; lastKnownFileType = wrapper.xcframework; name = AppVisorSDK.xcframework; path = ../../Downloads/AppVisorSDK.xcframework; sourceTree = "<group>"; };
+		25AADEE12EA21245001EACAA /* AppVisorSDK.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:C2A82W67LB:bravesoft inc."; lastKnownFileType = wrapper.xcframework; name = AppVisorSDK.xcframework; path = ../AppVisorSDK.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -87,7 +87,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				25A7DD0B2E9E14BC001C019E /* AppVisorSDK.xcframework in Frameworks */,
+				25AADEE22EA21246001EACAA /* AppVisorSDK.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,7 +133,7 @@
 		25A7DD092E9E14BC001C019E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				25A7DD0A2E9E14BC001C019E /* AppVisorSDK.xcframework */,
+				25AADEE12EA21245001EACAA /* AppVisorSDK.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -148,7 +148,7 @@
 				2585C1C02E94DBE300CED49B /* Sources */,
 				2585C1C12E94DBE300CED49B /* Frameworks */,
 				2585C1C22E94DBE300CED49B /* Resources */,
-				25A7DD0D2E9E14BC001C019E /* Embed Frameworks */,
+				25AADEE42EA21246001EACAA /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
