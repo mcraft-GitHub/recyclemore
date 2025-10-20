@@ -17,6 +17,9 @@ struct SplashView: View {
     @State private var email:String?
     @State private var token:String?
     
+    @State private var isShowingModal = false
+    @State private var modalType:ModalType = .update
+    
     var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -34,6 +37,18 @@ struct SplashView: View {
                         )
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
+                if isShowingModal {
+                    switch modalType {
+                    case .update :
+                        UpdateModal(isShowingModal: $isShowingModal)
+                        
+                    case .forceUpdate :
+                        ForceUpdateView()
+                        
+                    default:
+                        EmptyView()
+                    }
+                }
             }
             .onAppear {
                 Task {
@@ -62,6 +77,15 @@ struct SplashView: View {
                     // TODO:更新があれば誘導用のモーダルを表示する
                     if VersionCheckState == -1 {
                         NeedUpdate = true
+                        isShowingModal = true
+                        modalType = .forceUpdate
+                        return
+                    }
+                    else if VersionCheckState == 1 {
+                        NeedUpdate = true
+                        isShowingModal = true
+                        modalType = .update
+                        return
                     }
                     
                     print("比較結果")
@@ -80,18 +104,13 @@ struct SplashView: View {
                     }
                     else
                     {
+                        token = "aa"
+                        email = "aa"
                         // TODO:トークンとメアドの情報で自動ログインAPIを実行する
-                        
+                        await AutoLoginAPI()
                         // 成功→特に何もしない(認証データを受け取る可能性あり)
                         // 失敗→遷移先をログイン画面にする
                     }
-                    /*
-                     print("情報")
-                     print(token)
-                     print(email)
-                     */
-                    
-                    //
                 }
             }
         }

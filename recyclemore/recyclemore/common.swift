@@ -32,11 +32,13 @@ enum AppViewMode {
     case web
 }
 
-// モーダル種別 1:閉じる　2:リトライ 3:ログイン画面へ
+// モーダル種別 1:閉じる　2:リトライ 3:ログイン画面へ 4:アップデート 5:強制アップデート
 enum ModalType {
     case close
     case retry
     case back
+    case update
+    case forceUpdate
 }
 
 // 定数
@@ -50,6 +52,10 @@ var MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewte
 
 // API実行時の認証キー
 let API_KEY = "T9xLmQ2vZ8KfJr7NpYdHsAeRuC3WqV1B"    // TODO:隠さなくていい？
+
+// 初回ログイン用の情報
+var initial_token: String = ""
+var initial_email: String = ""
 
 // Colorクラスで色をHEXで指定できる様に機能を拡張
 extension Color {
