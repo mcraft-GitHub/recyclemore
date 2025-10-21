@@ -62,6 +62,12 @@ struct WebContentView: View {
             
         case "member":
             print("輝度")
+        
+        case "browser":
+            print("ブラウザ")
+            if let url = URL(string: "https://www.apple.com") {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
             
         case "first":
             print("JS")
