@@ -13,6 +13,11 @@ struct SplashView: View {
     
     @Binding var currentView: AppViewMode
     @State private var VersionCheckState = 0
+    @State private var VersionCheckComp = false
+    @State private var StatusCode = 200
+    @State private var isError = false
+    @State private var errorMessage = ""
+    @State private var errorCode = ""
     @State private var GoWeb = true
     @State private var email:String?
     @State private var token:String?
@@ -39,6 +44,8 @@ struct SplashView: View {
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 if isShowingModal {
                     switch modalType {
+                    case .close :
+                        ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
                     case .update :
                         UpdateModal(isShowingModal: $isShowingModal)
                         
@@ -59,7 +66,7 @@ struct SplashView: View {
                         print("3秒")
                         withAnimation(.none) {
                             //アプデが必要なら画面遷移どころでは無い
-                            if(!NeedUpdate){
+                            if(!NeedUpdate && !isError){
                                 if(GoWeb)
                                 {
                                     currentView = .web
@@ -74,22 +81,31 @@ struct SplashView: View {
                     
                     // バージョンチェックAPIを実行
                     await GetAppVersionAPI()
-                    // TODO:更新があれば誘導用のモーダルを表示する
-                    if VersionCheckState == -1 {
-                        NeedUpdate = true
-                        isShowingModal = true
-                        modalType = .forceUpdate
-                        return
-                    }
-                    else if VersionCheckState == 1 {
-                        NeedUpdate = true
-                        isShowingModal = true
-                        modalType = .update
-                        return
-                    }
                     
-                    print("比較結果")
-                    print(VersionCheckState)
+                    // 正常に実行できた場合
+                    if(VersionCheckComp) {
+                        print("比較結果")
+                        print(VersionCheckState)
+                        // TODO:更新があれば誘導用のモーダルを表示する
+                        if VersionCheckState == -1 {
+                            NeedUpdate = true
+                            isShowingModal = true
+                            modalType = .forceUpdate
+                            return
+                        }
+                        else if VersionCheckState == 1 {
+                            NeedUpdate = true
+                            isShowingModal = true
+                            modalType = .update
+                            return
+                        }
+                    }
+                    else
+                    {
+                        // 失敗したらモーダル表示して中断
+                        isShowingModal = true
+                        return
+                    }
                     
                     // トークンとメールアドレスの存在を確認
                     token = KeychainHelper.shared.read(key: "token")
@@ -130,12 +146,16 @@ struct SplashView: View {
         ] as [String:Any]
         
         do {
+            // テスト用の鉄砲玉
+            /*
+            throw NSError(domain: "Test", code: 1, userInfo: [NSLocalizedDescriptionKey: "雑エラー"])
+             */
             //リクエストデータの作成
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request.addValue(API_KEY, forHTTPHeaderField: "x-recyclemore-api-key")
-
+            
             //ボディにJsonをセット
             request.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])
             
@@ -144,7 +164,8 @@ struct SplashView: View {
             
             //ステータスコードの確認
             if let httpResponse = response as? HTTPURLResponse {
-                print("ステータスコード", httpResponse.statusCode)
+                StatusCode = httpResponse.statusCode
+                print("ステータスコード", StatusCode)
             }
             
             //レスポンスの表示
@@ -154,26 +175,71 @@ struct SplashView: View {
                 }
             }
             
-            if let decoded = try? JSONDecoder().decode(GetAppVersionResponse.self, from: data) {
-                await MainActor.run{
-                    print(decoded.item.need_version)
-                    
-                    // ここで比較した結果をもらって反映
-                    VersionCheckState = compareVersion(decoded.item.now_version,decoded.item.need_version)
+            // 正常成功時の処理
+            if (StatusCode == 200) {
+                if let decoded = try? JSONDecoder().decode(GetAppVersionResponse.self, from: data) {
+                    await MainActor.run{
+                        print(decoded.item.need_version)
+                        
+                        // ここで比較した結果をもらって反映
+                        VersionCheckState = compareVersion(decoded.item.now_version,decoded.item.need_version)
+                    }
+                }
+                else
+                {
+                    await MainActor.run {
+                        print("デコード失敗")
+                        isError = true
+                        errorMessage = ERROR_MES_EXC
+                        errorCode = "[エラーコード : 999]"
+                        modalType = .close
+                    }
                 }
             }
             else
             {
-                await MainActor.run {
-                    print("デコード失敗")
-                    // TODO:多分エラーモーダルを表示して遷移を止める必要がある
+                // エラー発生を記憶
+                isError = true
+                // 結果に問題があったのでステータスに応じたモーダルを表示
+                if(StatusCode == 400 || StatusCode == 401) {
+                    errorMessage = ERROR_MES_DEF
+                    errorCode = ""
+                    modalType = .close
+                }
+                else if(StatusCode == 429) {
+                    errorMessage = ERROR_MES_429
+                    errorCode = ""
+                    modalType = .close
+                }
+                else if(StatusCode == 500) {
+                    errorMessage = ERROR_MES_500
+                    errorCode = ""
+                    modalType = .close
+                }
+                else
+                {
+                    errorMessage = ERROR_MES_EXC
+                    errorCode = ""
+                    modalType = .close
                 }
             }
         }
         catch {
             await MainActor.run {
-                print("通信失敗")
-                // TODO:多分エラーモーダルを表示して遷移を止める必要がある
+                if error is URLError {
+                    // 通信失敗として処理
+                    print("通信失敗")
+                    isError = true
+                    errorMessage = ERROR_MES_NET
+                    errorCode = "[エラーコード : 000]"
+                    modalType = .close
+                } else {
+                    // 通信以外の実行エラー（予期しない例外）として処理
+                    isError = true
+                    errorMessage = ERROR_MES_EXC
+                    errorCode = "[エラーコード : 999]"
+                    modalType = .close
+                }
             }
         }
     }

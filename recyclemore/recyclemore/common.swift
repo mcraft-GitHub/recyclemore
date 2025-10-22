@@ -46,6 +46,13 @@ let BASE_SCREEN_WIDTH = 390     // 基準画面幅
 let BASE_SCREEN_HEIGHT = 844    // 基準画面高さ
 let SPLASH_WINDOW_TIME = 3      // スプラッシュ画面の表示時間
 
+// 汎用エラーメッセージ定型分
+let ERROR_MES_DEF = "通信に問題が発生しました。しばらくしてから再度お試しください。"
+let ERROR_MES_EXC = "予期しないエラーが発生しました。時間をおいて再度お試しください。"
+let ERROR_MES_NET = "通信エラーが発生しました。ネットワーク環境をご確認ください。"
+let ERROR_MES_429 = "アクセスが集中しています。しばらくしてから再度お試しください。"
+let ERROR_MES_500 = "サーバーで問題が発生しました。しばらくしてから再度お試しください。"
+
 // 共通の変数
 // マルチ画面で表示するURL情報
 var MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php"
