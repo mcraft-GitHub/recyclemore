@@ -18,7 +18,6 @@ struct SplashView: View {
     @State private var isError = false
     @State private var errorMessage = ""
     @State private var errorCode = ""
-    @State private var GoWeb = true
     @State private var email:String?
     @State private var token:String?
     
@@ -67,14 +66,7 @@ struct SplashView: View {
                         withAnimation(.none) {
                             //アプデが必要なら画面遷移どころでは無い
                             if(!NeedUpdate && !isError){
-                                if(GoWeb)
-                                {
-                                    currentView = .web
-                                }
-                                else
-                                {
-                                    currentView = .web
-                                }
+                                currentView = .web
                             }
                         }
                     }
@@ -111,21 +103,20 @@ struct SplashView: View {
                     token = KeychainHelper.shared.read(key: "token")
                     email = KeychainHelper.shared.read(key: "email")
                     
-                    // トークンかメアドが保存されていなければ遷移先をログイン画面にする
+                    // トークンかメアドが保存されていなければ遷移先をスタート画面にする
                     if(token == nil || email == nil)
                     {
-                        GoWeb = false
+                        print("スタート画面へ")
+                        //TODO:遷移先のURLをスタート画面にする
                         print("UDID")
                         print(Appvisor.appvisorUDID())
                     }
                     else
                     {
+                        // TODO:見ての通りダミーデータ　消すこと
                         token = "aa"
                         email = "aa"
-                        // TODO:トークンとメアドの情報で自動ログインAPIを実行する
                         await AutoLoginAPI()
-                        // 成功→特に何もしない(認証データを受け取る可能性あり)
-                        // 失敗→遷移先をログイン画面にする
                     }
                 }
             }
@@ -183,6 +174,7 @@ struct SplashView: View {
                         
                         // ここで比較した結果をもらって反映
                         VersionCheckState = compareVersion(decoded.item.now_version,decoded.item.need_version)
+                        VersionCheckComp = true
                     }
                 }
                 else
@@ -273,14 +265,10 @@ struct SplashView: View {
             let (data, response) = try await URLSession.shared.data(for: request)
             
             //ステータスコードの確認
-            guard let httpResponse = response as? HTTPURLResponse else {
-                print("HTTPレスポンスじゃないので中断")
-                // ログインには失敗しているので遷移先を変更
-                GoWeb = false
-                return
+            if let httpResponse = response as? HTTPURLResponse {
+                StatusCode = httpResponse.statusCode
+                print("ステータスコード", StatusCode)
             }
-            
-            print("ステータスコード", httpResponse.statusCode)
             
             //レスポンスの表示
             if let jsonString = String(data: data, encoding: .utf8){
@@ -290,7 +278,7 @@ struct SplashView: View {
             }
             
             // ログインに成功していれば
-            if httpResponse.statusCode == 200
+            if StatusCode == 200
             {
                 if let decoded = try? JSONDecoder().decode(LoginResponse.self, from: data) {
                     await MainActor.run{
@@ -298,38 +286,82 @@ struct SplashView: View {
                         SharedUserData.userData = UserData(is_tel_verified: decoded.item.is_tel_verified, is_user_registered: decoded.item.is_user_registered, is_age_verified: decoded.item.is_age_verified)
                         
                         // ログインに成功したのでマルチ画面で表示するページを変更する
-                        //TODO:MultiViewURLを書き換えること
+                        //TODO:遷移先をホーム画面に切り替える
                     }
                 }
                 else
                 {
                     await MainActor.run {
                         print("デコード失敗")
-                        // ログインに失敗しているので遷移先を変更
-                        GoWeb = false
+                        isError = true
+                        errorMessage = ERROR_MES_EXC
+                        errorCode = "[エラーコード : 999]"
+                        modalType = .close
                     }
                 }
             }
             else
             {
                 await MainActor.run {
-                    print("ログイン失敗")
-                    // ログインに失敗しているので遷移先を変更
-                    GoWeb = false
+                    
+                    // 結果に問題があったのでステータスに応じたモーダルを表示
+                    if(StatusCode == 400) {
+                        // ログイン失敗
+                        print("自動ログイン失敗")
+                        // TODO:遷移先URLをスタート画面にする
+                    }
+                    else if(StatusCode == 401) {
+                        // エラー発生を記憶
+                        isError = true
+                        errorMessage = ERROR_MES_DEF
+                        errorCode = ""
+                        modalType = .close
+                    }
+                    else if(StatusCode == 429) {
+                        // エラー発生を記憶
+                        isError = true
+                        errorMessage = ERROR_MES_429
+                        errorCode = ""
+                        modalType = .close
+                    }
+                    else if(StatusCode == 500) {
+                        // エラー発生を記憶
+                        isError = true
+                        errorMessage = ERROR_MES_500
+                        errorCode = ""
+                        modalType = .close
+                    }
+                    else
+                    {
+                        // エラー発生を記憶
+                        isError = true
+                        errorMessage = ERROR_MES_EXC
+                        errorCode = ""
+                        modalType = .close
+                    }
                 }
             }
         }
         catch {
             await MainActor.run {
-                print("通信自体失敗")
-                // ログインに失敗しているので遷移先を変更
-                GoWeb = false
+                if error is URLError {
+                    // 通信失敗として処理
+                    print("通信失敗")
+                    isError = true
+                    errorMessage = ERROR_MES_NET
+                    errorCode = "[エラーコード : 000]"
+                    modalType = .close
+                } else {
+                    // 通信以外の実行エラー（予期しない例外）として処理
+                    isError = true
+                    errorMessage = ERROR_MES_EXC
+                    errorCode = "[エラーコード : 999]"
+                    modalType = .close
+                }
             }
         }
     }
 }
-
-
 
 #Preview {
     SplashView(currentView: .constant(.splash))
