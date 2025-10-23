@@ -25,6 +25,8 @@ struct LoginView: View {
     @State private var errorCode = ""
     @State private var modalType:ModalType = .close
     
+    @State private var lastAPI = "Login"
+    
     @State private var topPadding: CGFloat = 120 // メインコンテンツパディング高
     @State private var topPaddingOffset: CGFloat = 0 // パディング調整値
     
@@ -174,7 +176,15 @@ struct LoginView: View {
                         ErrorRetryModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode,onRetry: {
                             Task{
                                 isLoading = true
-                                await LoginAPI()
+                                // リトライする内容を分岐
+                                if(lastAPI == "Login")
+                                {
+                                    await LoginAPI()
+                                }
+                                else
+                                {
+                                    await InitialLoginAPI()
+                                }
                                 isLoading = false
                             }
                         })
@@ -254,18 +264,19 @@ struct LoginView: View {
                         errorMessage = ERROR_MES_LOGIN_HEAVY
                         errorCode = "[エラーコード : 999]"
                         modalType = .back
+                        isShowingModal = true
                     }
                 }
             }
             else
             {
                 await MainActor.run {
-                    print("正しくログイン失敗")
                     // 結果に問題があったのでステータスに応じたモーダルを表示
                     if(StatusCode == 400) {
-                        errorMessage = ERROR_MES_LOGIN
+                        print("正しくログイン失敗")
+                        errorMessage = ERROR_MES_LOGIN_HEAVY
                         errorCode = ""
-                        modalType = .close
+                        modalType = .back
                         isShowingModal = true
                         
                         /*
@@ -284,12 +295,14 @@ struct LoginView: View {
                     else if(StatusCode == 429) {
                         errorMessage = ERROR_MES_429
                         errorCode = ""
+                        lastAPI = "Login"
                         modalType = .retry
                         isShowingModal = true
                     }
                     else if(StatusCode == 500) {
                         errorMessage = ERROR_MES_500
                         errorCode = ""
+                        lastAPI = "Login"
                         modalType = .retry
                         isShowingModal = true
                     }
@@ -310,6 +323,7 @@ struct LoginView: View {
                     print("通信失敗")
                     errorMessage = ERROR_MES_NET
                     errorCode = "[エラーコード : 000]"
+                    lastAPI = "Login"
                     modalType = .retry
                     isShowingModal = true
                 } else {
@@ -378,7 +392,7 @@ struct LoginView: View {
                         KeychainHelper.shared.save(initial_email, key: "email")
                         
                         // 表示する画面を切り替える
-                        // TODO:URLも切り替える
+                        // TODO:URLをユーザー情報登録画面に
                         currentView = .web
                     }
                 }
@@ -386,53 +400,101 @@ struct LoginView: View {
                 {
                     await MainActor.run {
                         print("デコード失敗")
-                        // TODO:エラーモーダルを表示する
-                        isShowingModal = true;
+                        errorMessage = ERROR_MES_LOGIN_HEAVY
+                        errorCode = "[エラーコード : 999]"
+                        modalType = .back
+                        isShowingModal = true
                     }
                 }
             }
             else
             {
                 await MainActor.run {
-                    print("ログイン失敗")
-                    // TODO:エラーコードに応じてエラーモーダルを分岐する
-                    errorMessage = "ログインに失敗しました\nメールアドレスとパスワードをお確かめください"
-                    errorCode = "エラーコード：001"
-                    modalType = .close
-                    isShowingModal = true
-                    /*
-                    print("仮成功模擬")
-                    MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest2.php"
-                    currentView = .web
-                    */
+                    // 結果に問題があったのでステータスに応じたモーダルを表示
+                    if(StatusCode == 400) {
+                        print("正しくログイン失敗")
+                        errorMessage = ERROR_MES_LOGIN
+                        errorCode = ""
+                        modalType = .close
+                        isShowingModal = true
+                        
+                        /*
+                        print("仮成功模擬")
+                        MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest2.php"
+                        currentView = .web
+                        */
+                    }
+                    else if(StatusCode == 401){
+                        errorMessage = ERROR_MES_LOGIN_HEAVY
+                        errorCode = ""
+                        modalType = .back
+                        isShowingModal = true
+
+                    }
+                    else if(StatusCode == 429) {
+                        errorMessage = ERROR_MES_429
+                        errorCode = ""
+                        lastAPI = "InitialLogin"
+                        modalType = .retry
+                        isShowingModal = true
+                    }
+                    else if(StatusCode == 500) {
+                        errorMessage = ERROR_MES_500
+                        errorCode = ""
+                        lastAPI = "InitialLogin"
+                        modalType = .retry
+                        isShowingModal = true
+                    }
+                    else
+                    {
+                        errorMessage = ERROR_MES_LOGIN_HEAVY
+                        errorCode = ""
+                        modalType = .back
+                        isShowingModal = true
+                    }
                 }
             }
         }
         catch {
             await MainActor.run {
-                print("通信自体失敗")
-                // TODO:エラーモーダルを表示する
-                isShowingModal = true
+                if error is URLError {
+                    // 通信失敗として処理
+                    print("通信失敗")
+                    errorMessage = ERROR_MES_NET
+                    errorCode = "[エラーコード : 000]"
+                    lastAPI = "InitialLogin"
+                    modalType = .retry
+                    isShowingModal = true
+                } else {
+                    // 通信以外の実行エラー（予期しない例外）として処理
+                    errorMessage = ERROR_MES_LOGIN_HEAVY
+                    errorCode = "[エラーコード : 999]"
+                    modalType = .back
+                    isShowingModal = true
+                }
             }
         }
     }
     
     // メアド用バリデーションチェック
     func isValidEmail(_ email: String) -> Bool {
+        // 〇〇＠〇〇.〇〇のような構造
         let regex = #"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$"#
         return email.range(of: regex, options: [.regularExpression, .caseInsensitive]) != nil
     }
     
     // パスワード用バリデーションチェック
     func isValidPassword(_ password: String) -> Bool {
+        // 文字数不足は即アウト
         guard password.count >= 8 else {
             return false
         }
         
-        var hasNumber = false
-        var hasLetter = false
-        var hasSymbol = false
+        var hasNumber = false   // 数字
+        var hasLetter = false   // アルファベット
+        var hasSymbol = false   // 記号
         
+        // 文字種を頭から調査
         for char in password {
             if char.isNumber {
                 hasNumber = true
@@ -443,6 +505,7 @@ struct LoginView: View {
             }
         }
         
+        // ３種盛りの完成を確認
         let typeCount = [hasNumber, hasLetter, hasSymbol].filter { $0 }.count
         return typeCount >= 3
     }
