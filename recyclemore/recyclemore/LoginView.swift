@@ -17,6 +17,7 @@ struct LoginView: View {
     @State private var password = ""
     @State private var emailErrorMessage: String? = nil
     @State private var passwordErrorMessage: String? = nil
+    @State private var StatusCode = 200
     
     @State private var isLoading = false
     @State private var isShowingModal = false
@@ -90,7 +91,7 @@ struct LoginView: View {
                             HStack(spacing:20) {
                                 Button(action: {
                                     print("戻るボタン")
-                                    // 前の画面に戻る
+                                    // スタート画面に戻る
                                     currentView = .web
                                 }) {
                                     Text("戻る")
@@ -102,27 +103,43 @@ struct LoginView: View {
                                 
                                 Button(action: {
                                     Task {
+                                        var email_OK = false
+                                        var pass_OK = false
                                         topPaddingOffset = 0
                                         if email != "" {
-                                            emailErrorMessage = nil
+                                            if(isValidEmail(email)) {
+                                                emailErrorMessage = nil
+                                                email_OK = true
+                                            }
+                                            else
+                                            {
+                                                emailErrorMessage = "メールアドレスが正しくありません"
+                                            }
                                         }
                                         else
                                         {
-                                            emailErrorMessage = "未入力"
+                                            emailErrorMessage = "メールアドレスが未入力です"
                                             topPaddingOffset += 10
                                         }
                                         
                                         if password != "" {
-                                            passwordErrorMessage = nil
+                                            if(isValidPassword(password)) {
+                                                passwordErrorMessage = nil
+                                                pass_OK = true
+                                            }
+                                            else
+                                            {
+                                                passwordErrorMessage = "パスワードが正しくありません"
+                                            }
                                         }
                                         else
                                         {
-                                            passwordErrorMessage = "未入力"
+                                            passwordErrorMessage = "パスワードが未入力です"
                                             topPaddingOffset += 10
                                         }
                                         
-                                        // 両方入力されていればログインAPIを実行
-                                        if (email != "" && password != "") {
+                                        // 両方正しく入力されていればログインAPIを実行
+                                        if (email_OK && pass_OK) {
                                             // ログインAPIを実行
                                             isLoading = true
                                             await LoginAPI()
@@ -162,7 +179,7 @@ struct LoginView: View {
                             }
                         })
                     case .back:
-                        ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
+                        ErrorBackModalView(isShowingModal: $isShowingModal,currentView: $currentView,messag: errorMessage,code: errorCode)
                     default:
                         EmptyView()
                     }
@@ -192,7 +209,7 @@ struct LoginView: View {
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.addValue(API_KEY, forHTTPHeaderField: "x-recyclemore-api-key")
+            request.addValue(API_KEY+"a", forHTTPHeaderField: "x-recyclemore-api-key")
             
             //ボディにJsonをセット
             request.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])
@@ -201,12 +218,10 @@ struct LoginView: View {
             let (data, response) = try await URLSession.shared.data(for: request)
             
             //ステータスコードの確認
-            guard let httpResponse = response as? HTTPURLResponse else {
-                print("HTTPレスポンスじゃないので中断")
-                return
+            if let httpResponse = response as? HTTPURLResponse {
+                StatusCode = httpResponse.statusCode
+                print("ステータスコード", StatusCode)
             }
-            
-            print("ステータスコード", httpResponse.statusCode)
             
             //レスポンスの表示
             if let jsonString = String(data: data, encoding: .utf8){
@@ -216,7 +231,7 @@ struct LoginView: View {
             }
             
             // ログインに成功していれば
-            if httpResponse.statusCode == 200
+            if StatusCode == 200
             {
                 if let decoded = try? JSONDecoder().decode(LoginResponse.self, from: data) {
                     await MainActor.run{
@@ -228,6 +243,7 @@ struct LoginView: View {
                         KeychainHelper.shared.save(email, key: "email")
                         
                         // 表示する画面を切り替える
+                        // TODO:ホーム画面のURLを設定する
                         currentView = .web
                     }
                 }
@@ -235,33 +251,74 @@ struct LoginView: View {
                 {
                     await MainActor.run {
                         print("デコード失敗")
-                        // TODO:エラーモーダルを表示する
-                        isShowingModal = true;
+                        errorMessage = ERROR_MES_LOGIN_HEAVY
+                        errorCode = "[エラーコード : 999]"
+                        modalType = .back
                     }
                 }
             }
             else
             {
                 await MainActor.run {
-                    print("ログイン失敗")
-                    // TODO:エラーコードに応じてエラーモーダルを分岐する
-                    errorMessage = "ログインに失敗しました\nメールアドレスとパスワードをお確かめください"
-                    errorCode = "エラーコード：001"
-                    modalType = .close
-                    isShowingModal = true
-                    /*
-                    print("仮成功模擬")
-                    MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest2.php"
-                    currentView = .web
-                    */
+                    print("正しくログイン失敗")
+                    // 結果に問題があったのでステータスに応じたモーダルを表示
+                    if(StatusCode == 400) {
+                        errorMessage = ERROR_MES_LOGIN
+                        errorCode = ""
+                        modalType = .close
+                        isShowingModal = true
+                        
+                        /*
+                        print("仮成功模擬")
+                        MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest2.php"
+                        currentView = .web
+                        */
+                    }
+                    else if(StatusCode == 401){
+                        errorMessage = ERROR_MES_LOGIN_HEAVY
+                        errorCode = ""
+                        modalType = .back
+                        isShowingModal = true
+
+                    }
+                    else if(StatusCode == 429) {
+                        errorMessage = ERROR_MES_429
+                        errorCode = ""
+                        modalType = .retry
+                        isShowingModal = true
+                    }
+                    else if(StatusCode == 500) {
+                        errorMessage = ERROR_MES_500
+                        errorCode = ""
+                        modalType = .retry
+                        isShowingModal = true
+                    }
+                    else
+                    {
+                        errorMessage = ERROR_MES_LOGIN_HEAVY
+                        errorCode = ""
+                        modalType = .back
+                        isShowingModal = true
+                    }
                 }
             }
         }
         catch {
             await MainActor.run {
-                print("通信自体失敗")
-                // TODO:エラーモーダルを表示する
-                isShowingModal = true
+                if error is URLError {
+                    // 通信失敗として処理
+                    print("通信失敗")
+                    errorMessage = ERROR_MES_NET
+                    errorCode = "[エラーコード : 000]"
+                    modalType = .retry
+                    isShowingModal = true
+                } else {
+                    // 通信以外の実行エラー（予期しない例外）として処理
+                    errorMessage = ERROR_MES_LOGIN_HEAVY
+                    errorCode = "[エラーコード : 999]"
+                    modalType = .back
+                    isShowingModal = true
+                }
             }
         }
     }
@@ -358,6 +415,36 @@ struct LoginView: View {
                 isShowingModal = true
             }
         }
+    }
+    
+    // メアド用バリデーションチェック
+    func isValidEmail(_ email: String) -> Bool {
+        let regex = #"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$"#
+        return email.range(of: regex, options: [.regularExpression, .caseInsensitive]) != nil
+    }
+    
+    // パスワード用バリデーションチェック
+    func isValidPassword(_ password: String) -> Bool {
+        guard password.count >= 8 else {
+            return false
+        }
+        
+        var hasNumber = false
+        var hasLetter = false
+        var hasSymbol = false
+        
+        for char in password {
+            if char.isNumber {
+                hasNumber = true
+            } else if char.isLetter {
+                hasLetter = true
+            } else {
+                hasSymbol = true
+            }
+        }
+        
+        let typeCount = [hasNumber, hasLetter, hasSymbol].filter { $0 }.count
+        return typeCount >= 3
     }
 }
 
