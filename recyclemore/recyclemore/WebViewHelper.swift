@@ -140,6 +140,32 @@ struct HybridWebView: UIViewRepresentable {
                 parent.onCustomEvent("first",nil)
             }
         }
+        
+        // ページ読み込み失敗時
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            handleWebError(error)
+        }
+
+        // ページ読み込み開始時に失敗した場合（通信OFFなど）
+        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+            handleWebError(error)
+        }
+
+        // 共通のエラーハンドラ
+        private func handleWebError(_ error: Error) {
+            if let urlError = error as? URLError {
+                switch urlError.code {
+                case .notConnectedToInternet:
+                    parent.onCustomEvent("network_error", nil)
+                case .timedOut:
+                    parent.onCustomEvent("network_timeout", ["message": "通信がタイムアウトしました"])
+                default:
+                    parent.onCustomEvent("network_other", ["message": urlError.localizedDescription])
+                }
+            } else {
+                parent.onCustomEvent("web_error", ["message": error.localizedDescription])
+            }
+        }
     }
 }
 

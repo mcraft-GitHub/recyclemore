@@ -14,13 +14,29 @@ struct WebContentView: View {
     @Binding var currentView: AppViewMode
     @State private var webView: WKWebView? = nil  // ← WebViewを保持
     
+    @State private var errorMessage = ""
+    @State private var errorCode = ""
+    @State private var isShowingModal = false
+    @State private var modalType:ModalType = .close
+    
     var body: some View {
-        HybridWebView(url: URL(string: MultiViewURL)!,
-                      onCustomEvent: { action, params in handleWebEvent(action: action, params: params)
-        },
-                      UIwebView: $webView
-        )
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        ZStack {
+            HybridWebView(url: URL(string: MultiViewURL)!,
+                          onCustomEvent: { action, params in handleWebEvent(action: action, params: params)
+            },
+                          UIwebView: $webView
+            )
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            if isShowingModal {
+                switch modalType {
+                case .close :
+                    ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
+                default:
+                    EmptyView()
+                }
+            }
+        }
+        
         //https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php
         
         
@@ -84,6 +100,15 @@ struct WebContentView: View {
                         print("setDeviceInfo 呼び出し成功")
                     }
                 }
+        case "network_error":
+            print("通信エラーですよ")
+            errorCode = ""
+            errorMessage = ERROR_MES_NET
+            modalType = .close
+            isShowingModal = true
+            
+            // TODO:エラー出しても現状進行不能なのでその後どうするかは要確認
+            
         default:
             print("なんかされた")
         }
