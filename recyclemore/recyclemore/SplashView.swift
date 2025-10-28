@@ -64,6 +64,11 @@ struct SplashView: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(SPLASH_WINDOW_TIME)) {
                         print("3秒")
                         withAnimation(.none) {
+                            
+                            if(IsByURL)
+                            {
+                                return
+                            }
                             //アプデが必要なら画面遷移どころでは無い
                             if(!NeedUpdate && !isError){
                                 currentView = .web

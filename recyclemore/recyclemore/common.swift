@@ -59,6 +59,9 @@ let ERROR_MES_500 = "サーバーで問題が発生しました。しばらく�
 // マルチ画面で表示するURL情報
 var MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php"
 
+// URLスキームでアプリを開いたことを示すフラグ
+var IsByURL = false
+
 // API実行時の認証キー
 let API_KEY = "T9xLmQ2vZ8KfJr7NpYdHsAeRuC3WqV1B"    // TODO:隠さなくていい？
 

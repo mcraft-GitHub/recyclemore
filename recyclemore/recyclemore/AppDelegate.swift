@@ -33,6 +33,8 @@ class AppDelegate: NSObject,UIApplicationDelegate,UNUserNotificationCenterDelega
         print("path: \(url.path)")        // 例: /multi
         print("query: \(url.query ?? "")") // 例: dir=test
         
+        IsByURL = true
+        
         // ここで必要に応じて画面遷移や処理を呼び出せる
         // 例: 特定のViewに遷移する通知を出す
         /*NotificationCenter.default.post(
