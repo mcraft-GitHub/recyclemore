@@ -101,8 +101,9 @@ struct WebContentView: View {
             {
                 original = UIScreen.main.brightness
                 isBright.toggle()
-                UIScreen.main.brightness = 0.2
+                UIScreen.main.brightness = 1.0
                 //Timerスタート
+                // TODO:戻す処理含め内容が適当なので追加対応必須
                 timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) {
                     _ in
                     isBright.toggle()
