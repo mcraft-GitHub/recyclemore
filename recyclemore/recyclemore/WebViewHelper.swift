@@ -154,6 +154,7 @@ struct HybridWebView: UIViewRepresentable {
         // 共通のエラーハンドラ
         private func handleWebError(_ error: Error) {
             if let urlError = error as? URLError {
+                print("WKWebView error:", urlError.code.rawValue, urlError.localizedDescription)
                 switch urlError.code {
                 case .notConnectedToInternet:
                     parent.onCustomEvent("network_error", nil)

@@ -19,6 +19,10 @@ struct WebContentView: View {
     @State private var isShowingModal = false
     @State private var modalType:ModalType = .close
     
+    @State private var isBright = false
+    @State private var timer: Timer?
+    @State private var original: CGFloat = 0.0
+    
     var body: some View {
         ZStack {
             HybridWebView(url: URL(string: MultiViewURL)!,
@@ -36,7 +40,18 @@ struct WebContentView: View {
                 }
             }
         }
-        
+        .onChange(of: isShowingModal) { newValue in
+            if newValue == false {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    if let webView = webView,
+                       let url = webView.url ?? URL(string: MultiViewURL) {
+                        var request = URLRequest(url: url)
+                            request.cachePolicy = .reloadIgnoringLocalCacheData
+                        webView.load(URLRequest(url: url))
+                    }
+                }
+            }
+        }
         //https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php
         
         
@@ -78,6 +93,24 @@ struct WebContentView: View {
             
         case "member":
             print("輝度")
+            if(isBright)
+            {
+                return
+            }
+            else
+            {
+                original = UIScreen.main.brightness
+                isBright.toggle()
+                UIScreen.main.brightness = 0.2
+                //Timerスタート
+                timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) {
+                    _ in
+                    isBright.toggle()
+                    UIScreen.main.brightness = original
+                    print(UIScreen.main.brightness)
+                    print("戻った")
+                }
+            }
         
         case "browser":
             print("ブラウザ")

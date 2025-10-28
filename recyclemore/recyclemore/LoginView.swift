@@ -219,7 +219,7 @@ struct LoginView: View {
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.addValue(API_KEY+"a", forHTTPHeaderField: "x-recyclemore-api-key")
+            request.addValue(API_KEY, forHTTPHeaderField: "x-recyclemore-api-key")
             
             //ボディにJsonをセット
             request.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])
@@ -274,9 +274,9 @@ struct LoginView: View {
                     // 結果に問題があったのでステータスに応じたモーダルを表示
                     if(StatusCode == 400) {
                         print("正しくログイン失敗")
-                        errorMessage = ERROR_MES_LOGIN_HEAVY
+                        errorMessage = ERROR_MES_LOGIN
                         errorCode = ""
-                        modalType = .back
+                        modalType = .close
                         isShowingModal = true
                         
                         /*
