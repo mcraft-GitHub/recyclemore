@@ -23,27 +23,6 @@ class AppDelegate: NSObject,UIApplicationDelegate,UNUserNotificationCenterDelega
         
         return true
     }
-    
-    // カスタムURLスキームでアプリが開かれたときに呼ばれる
-    func application(_ app: UIApplication,
-                     open url: URL,
-                     options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        
-        print("アプリがURLスキームで開かれた: \(url)")
-        print("path: \(url.path)")        // 例: /multi
-        print("query: \(url.query ?? "")") // 例: dir=test
-        
-        IsByURL = true
-        
-        // ここで必要に応じて画面遷移や処理を呼び出せる
-        // 例: 特定のViewに遷移する通知を出す
-        /*NotificationCenter.default.post(
-            name: Notification.Name("ReceivedDeepLink"),
-            object: url
-        )*/
-        
-        return true
-    }
 
     // アプリがフォアグラウンドに来た
     func applicationWillEnterForeground(_ application: UIApplication) {
