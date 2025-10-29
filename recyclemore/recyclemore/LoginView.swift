@@ -24,6 +24,7 @@ struct LoginView: View {
     @State private var errorMessage = ""
     @State private var errorCode = ""
     @State private var modalType:ModalType = .close
+    @State private var oneShot = true
     
     @State private var lastAPI = "Login"
     
@@ -192,6 +193,23 @@ struct LoginView: View {
                         ErrorBackModalView(isShowingModal: $isShowingModal,currentView: $currentView,messag: errorMessage,code: errorCode)
                     default:
                         EmptyView()
+                    }
+                }
+            }
+            .onAppear {
+                // 一回だけね
+                if(oneShot)
+                {
+                    oneShot = false
+                    Task {
+                        print("初回起動")
+                        if(initial_email != "" && initial_token != "")
+                        {
+                            print("初回ログイン実行")
+                            isLoading = true
+                            await InitialLoginAPI()
+                            isLoading = false
+                        }
                     }
                 }
             }

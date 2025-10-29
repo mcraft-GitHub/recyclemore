@@ -18,10 +18,7 @@ struct WebContentView: View {
     @State private var errorCode = ""
     @State private var isShowingModal = false
     @State private var modalType:ModalType = .close
-    
-    @State private var isBright = false
-    @State private var timer: Timer?
-    @State private var original: CGFloat = 0.0
+    @State private var original: CGFloat = UIScreen.main.brightness
     
     var body: some View {
         ZStack {
@@ -80,45 +77,37 @@ struct WebContentView: View {
             currentView = .login
             
         case "logout":
-            print("ログアウト")
+            print("ログアウト実行")
+            // TODO:遷移図的には多分ログアウトAPIを実行する必要がある気がする
             // 参照用ユーザー情報を削除
             SharedUserData.userData = nil
             // 端末に保存しているログイン情報を削除
             KeychainHelper.shared.delete(key: "token")
             KeychainHelper.shared.delete(key: "email")
             
-        case "regist":
-            print("新規登録")
-            // TODO:パラメーターを使って初回ログインAPIを実行する
-            
-        case "member":
+        case "changeBrightness":
             print("輝度")
-            if(isBright)
-            {
-                return
+            let brightness = params?["brightness"] as? Float ?? 1.0
+            
+            if(brightness == -1.0){
+                print("輝度復元")
+                UIScreen.main.brightness = original
             }
             else
             {
+                print("輝度変更")
                 original = UIScreen.main.brightness
-                isBright.toggle()
-                UIScreen.main.brightness = 1.0
-                //Timerスタート
-                // TODO:戻す処理含め内容が適当なので追加対応必須
-                timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) {
-                    _ in
-                    isBright.toggle()
-                    UIScreen.main.brightness = original
-                    print(UIScreen.main.brightness)
-                    print("戻った")
-                }
+                UIScreen.main.brightness = CGFloat(brightness)
             }
         
-        case "browser":
-            print("ブラウザ")
-            if let url = URL(string: "https://www.apple.com") {
+        case "openWebsite":
+            print("ブラウザオープン")
+            let res = params?["url"] as? String ?? ""
+            if let url = URL(string: res) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
-            
+        
+            /*
         case "first":
             print("JS")
             // ここでページ内のJSを呼び出す
@@ -134,6 +123,7 @@ struct WebContentView: View {
                         print("setDeviceInfo 呼び出し成功")
                     }
                 }
+             */
         case "network_error":
             print("通信エラーですよ")
             errorCode = ""
@@ -142,7 +132,34 @@ struct WebContentView: View {
             isShowingModal = true
             
             // TODO:エラー出しても現状進行不能なのでその後どうするかは要確認
+        
+        case "goToLogin":
+            print("ログイン画面へ")
+            let mail = params?["mail"] as? String ?? ""
+            let token = params?["token"] as? String ?? ""
+            if(mail != "" && token != "")
+            {
+                initial_email = mail
+                initial_token = token
+            }
+            currentView = .login
             
+        case "sendLoginInfo":
+            print("JS")
+            // ここでページ内のJSを呼び出す
+            // TODO:データは適当なので記憶してあるログイン情報を返せるようにすること
+            let token = "abc123"
+            let email = "test@example.com"
+            
+            // 関数名やら引数やらを指定
+            let jsCode = "window.setDeviceInfo('\(token)', '\(email)', '\(APP_VERSION)')"
+                webView?.evaluateJavaScript(jsCode) { result, error in
+                    if let error = error {
+                        print("JS 実行エラー: \(error)")
+                    } else {
+                        print("setDeviceInfo 呼び出し成功")
+                    }
+                }
         default:
             print("なんかされた")
         }

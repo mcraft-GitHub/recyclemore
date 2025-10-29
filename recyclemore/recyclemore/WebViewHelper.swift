@@ -66,7 +66,13 @@ struct HybridWebView: UIViewRepresentable {
         
         // PostMessage機構用のハンドラー登録
         // web側で：window.webkit.messageHandlers.〇〇.postMessage("メッセージ") の〇〇部分が　name:　に入る
+        // 複数のパターンがあるので言われるがままに登録していく
         config.userContentController.add(context.coordinator, name: "appHandler")
+        config.userContentController.add(context.coordinator, name: "changeBrightness")
+        config.userContentController.add(context.coordinator, name: "logout")
+        config.userContentController.add(context.coordinator, name: "goToLogin")
+        config.userContentController.add(context.coordinator, name: "sendLoginInfo")
+        config.userContentController.add(context.coordinator, name: "openWebsite")
         
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = context.coordinator
@@ -91,17 +97,79 @@ struct HybridWebView: UIViewRepresentable {
         
         // PostMessageの受信処理
         func userContentController(_ userContentContoroller: WKUserContentController, didReceive message: WKScriptMessage) {
+            print("受信")
+            // 基本サンプル
             if message.name == "appHandler" {
                 // メッセージが文字列だけの場合
                 if let actionString = message.body as? String {
-                    parent.onCustomEvent(actionString,["action": actionString])
+                    //parent.onCustomEvent(actionString,["action": actionString])
                     return
                 }
                 
                 // メッセージが辞書型の場合
                 if let dict = message.body as? [String: Any],
                    let action = dict["action"] as? String {
-                    parent.onCustomEvent(action, dict)
+                    //parent.onCustomEvent(action, dict)
+                }
+            }
+            
+            // ログイン画面への遷移要求
+            if message.name == "goToLogin" {
+                print("goToLogin")
+                if let dict = message.body as? [String: Any] {
+                    // 来るであろう情報を抜き出す
+                    let mail = dict["mail"] as? String ?? ""
+                    let token = dict["token"] as? String ?? ""
+                    print("ログインボタンが押された → mail=\(mail), token=\(token)")
+                    
+                    // イベント通知
+                    parent.onCustomEvent("goToLogin", ["mail": mail, "token": token])
+                } else {
+                    // オブジェクトではなく文字列が来たとき用の保険(多分来ない)
+                    print("形式がおかしい")
+                }
+            }
+            
+            // ログイン情報送信要求
+            if message.name == "sendLoginInfo" {
+                print("sendLoginInfo")
+                // イベント通知
+                parent.onCustomEvent("sendLoginInfo", nil)
+            }
+            
+            // ログアウト要求
+            if message.name == "logout" {
+                print("logout")
+                // イベント通知
+                parent.onCustomEvent("logout", nil)
+            }
+            
+            // 輝度変更要求
+            if message.name == "changeBrightness" {
+                print("changeBrightness")
+                if let dict = message.body as? [String: Any] {
+                    // 来るであろう情報を抜き出す
+                    let brightness = dict["brightness"] as? Float ?? 1.0
+                    
+                    // イベント通知
+                    parent.onCustomEvent("changeBrightness", ["brightness": brightness])
+                } else {
+                    // オブジェクトではなく文字列が来たとき用の保険(多分来ない)
+                    print("形式がおかしい")
+                }
+            }
+            
+            // ブラウザ起動要求
+            if message.name == "openWebsite" {
+                print("openWebsite")
+                if let dict = message.body as? [String: Any] {
+                    // 来るであろう情報を抜き出す
+                    let url = dict["url"] as? String ?? ""
+                    // イベント通知
+                    parent.onCustomEvent("openWebsite", ["url": url])
+                } else {
+                    // オブジェクトではなく文字列が来たとき用の保険(多分来ない)
+                    print("形式がおかしい")
                 }
             }
         }
@@ -125,6 +193,7 @@ struct HybridWebView: UIViewRepresentable {
         }
         
         // webView内のページの読み込みが完了したタイミングで実行される
+        // 特定の画面のみなんらかの処理を行いたい場合はここに仕込めば実現可能
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             //開いているURLを確認
             guard let currentURL = webView.url?.absoluteString else {
@@ -137,7 +206,8 @@ struct HybridWebView: UIViewRepresentable {
             // 特定のURLだった場合はページ内のJSを実行する処理を呼ぶ
             if(currentURL == targetURL)
             {
-                parent.onCustomEvent("first",nil)
+                //例、必要に応じてContentViewにも対応する処理を書くこと
+                //parent.onCustomEvent("first",nil)
             }
         }
         
