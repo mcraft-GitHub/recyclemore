@@ -83,7 +83,6 @@ struct SplashView: View {
                     if(VersionCheckComp) {
                         print("比較結果")
                         print(VersionCheckState)
-                        // TODO:更新があれば誘導用のモーダルを表示する
                         if VersionCheckState == -1 {
                             NeedUpdate = true
                             isShowingModal = true
@@ -112,15 +111,23 @@ struct SplashView: View {
                     if(token == nil || email == nil)
                     {
                         print("スタート画面へ")
-                        //TODO:遷移先のURLをスタート画面にする
+                        if(Server == "Dev")
+                        {
+                            MultiViewURL = BaseURL_Dev + StartDir
+                        }
+                        else
+                        {
+                            MultiViewURL = BaseURL_Dis + StartDir
+                        }
                         print("UDID")
                         print(Appvisor.appvisorUDID())
                     }
                     else
                     {
-                        // TODO:見ての通りダミーデータ　消すこと
-                        token = "aa"
-                        email = "aa"
+                        print("ホーム画面へ")
+                        // TODO:見ての通りテスト用のダミーデータ　消すこと
+                        //token = "aa"
+                        //email = "aa"
                         await AutoLoginAPI()
                     }
                 }
@@ -291,7 +298,14 @@ struct SplashView: View {
                         SharedUserData.userData = UserData(is_tel_verified: decoded.item.is_tel_verified, is_user_registered: decoded.item.is_user_registered, is_age_verified: decoded.item.is_age_verified)
                         
                         // ログインに成功したのでマルチ画面で表示するページを変更する
-                        //TODO:遷移先をホーム画面に切り替える
+                        if(Server == "Dev")
+                        {
+                            MultiViewURL = BaseURL_Dev + HomeDir
+                        }
+                        else
+                        {
+                            MultiViewURL = BaseURL_Dis + HomeDir
+                        }
                     }
                 }
                 else

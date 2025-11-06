@@ -10,6 +10,8 @@ import SwiftUI
 
 //アプリバージョン
 let APP_VERSION = "1.0.3"
+// 接続先 Dev = 開発　Dis(それ以外) = 本番
+let Server = "Dev"
 
 // ユーザー情報構造体
 struct UserData: Codable{
@@ -58,6 +60,14 @@ let ERROR_MES_500 = "サーバーで問題が発生しました。しばらく�
 // 共通の変数
 // マルチ画面で表示するURL情報
 var MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php"
+var BaseURL_Dev = "https://blue-rock-0d4132800.3.azurestaticapps.net/"
+var BaseURL_Dis = "https://app.recyeclemore.jp/"
+
+let StartDir = "start"
+let HomeDir = "home"
+let CreateDir = "account/account-create/4"
+let ForgetDir = "account/forget/1"
+
 
 // URLスキームでアプリを開いたことを示すフラグ
 var IsByURL = false

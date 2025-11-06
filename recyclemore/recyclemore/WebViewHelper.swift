@@ -76,7 +76,7 @@ struct HybridWebView: UIViewRepresentable {
         
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = context.coordinator
-        // ✅ Binding の更新は非同期で行う
+        // Binding の更新は非同期で行う
         DispatchQueue.main.async {
             self.UIwebView = webView
         }
@@ -176,6 +176,7 @@ struct HybridWebView: UIViewRepresentable {
         
         // URL遷移の検出処理
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+            print("url変更！")
             if let url = navigationAction.request.url,
                url.scheme == "myapp" {
                 let action = url.host ?? "unknown"  // パスの終端を取得(例：myapp://test/login なら　loginが取れる)

@@ -410,7 +410,14 @@ struct LoginView: View {
                         KeychainHelper.shared.save(initial_email, key: "email")
                         
                         // 表示する画面を切り替える
-                        // TODO:URLをユーザー情報登録画面に
+                        if(Server == "Dev")
+                        {
+                            MultiViewURL = BaseURL_Dev + CreateDir
+                        }
+                        else
+                        {
+                            MultiViewURL = BaseURL_Dis + CreateDir
+                        }
                         currentView = .web
                     }
                 }

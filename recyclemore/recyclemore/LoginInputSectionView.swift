@@ -34,8 +34,15 @@ struct LoginInputSectionView: View {
                 .frame(maxWidth: .infinity)
                 .onTapGesture {
                     print("パスワードを忘れた方がタップされた")
-                    // TODO:パスワード再設置画面のURLを設定する
-                    MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest3.php"
+                    if(Server == "Dev")
+                    {
+                        MultiViewURL = BaseURL_Dev + ForgetDir
+                    }
+                    else
+                    {
+                        MultiViewURL = BaseURL_Dis + ForgetDir
+                    }
+                    
                     currentView = .web
                 }
             }
