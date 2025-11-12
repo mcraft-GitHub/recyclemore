@@ -33,7 +33,6 @@ struct LoginInputSectionView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .onTapGesture {
-                    print("パスワードを忘れた方がタップされた")
                     if(Server == "Dev")
                     {
                         MultiViewURL = BaseURL_Dev + ForgetDir

@@ -59,7 +59,7 @@ let ERROR_MES_500 = "サーバーで問題が発生しました。しばらく�
 
 // 共通の変数
 // マルチ画面で表示するURL情報
-var MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php"
+var MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php" // 書き換えずにここを開くとPOSTMessage等が試せる
 var BaseURL_Dev = "https://blue-rock-0d4132800.3.azurestaticapps.net/"
 var BaseURL_Dis = "https://app.recyeclemore.jp/"
 
