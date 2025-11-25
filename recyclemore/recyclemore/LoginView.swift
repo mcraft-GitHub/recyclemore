@@ -37,33 +37,38 @@ struct LoginView: View {
         }
         else
         {
-            // ヘッダー部
-            VStack(spacing: 0) {
-                // ヘッダー部分(位置固定)
-                ZStack {
-                    Color.white
-                    
-                    Image("HeaderLogo")
-                        .resizable()
-                    //.scaledToFit()
-                        .frame(
-                            width: 177.5,
-                            height: 30)
-                    
-                }
-                .frame(height: 60)
-                .overlay(
-                    Rectangle()
-                        .frame(height: 1)
-                        .foregroundColor(.gray),
-                    alignment: .bottom
-                )
-            }
-            .background(Color(UIColor.systemBackground))
             ZStack {
-                // メインコンテンツ
+                // 背景色
+                Color(UIColor.systemBackground).ignoresSafeArea()
+                // ヘッダー部
                 VStack(spacing: 0) {
-                    //ScrollView(.vertical, showsIndicators: false) {
+                    // ヘッダー部分(位置固定)
+                    ZStack {
+                        Color.white
+                        
+                        Image("HeaderLogo")
+                            .resizable()
+                        //.scaledToFit()
+                            .frame(
+                                width: 177.5,
+                                height: 30)
+                        
+                    }
+                    .frame(height: 60)
+                    .overlay(
+                        Rectangle()
+                            .frame(height: 1)
+                            .foregroundColor(.gray),
+                        alignment: .bottom
+                    )
+                    
+                    Spacer()
+                }
+                .background(Color(UIColor.systemBackground))
+                ZStack {
+                    // メインコンテンツ
+                    VStack(spacing: 0) {
+                        //ScrollView(.vertical, showsIndicators: false) {
                         VStack(spacing: 0) {
                             // アイコンとテキスト領域
                             HStack(spacing:12) {
@@ -120,12 +125,13 @@ struct LoginView: View {
                                             else
                                             {
                                                 emailErrorMessage = "メールアドレスが正しくありません"
+                                                topPaddingOffset += 21
                                             }
                                         }
                                         else
                                         {
                                             emailErrorMessage = "メールアドレスが未入力です"
-                                            topPaddingOffset += 10
+                                            topPaddingOffset += 21
                                         }
                                         
                                         if password != "" {
@@ -136,12 +142,13 @@ struct LoginView: View {
                                             else
                                             {
                                                 passwordErrorMessage = "パスワードが正しくありません"
+                                                topPaddingOffset += 21
                                             }
                                         }
                                         else
                                         {
                                             passwordErrorMessage = "パスワードが未入力です"
-                                            topPaddingOffset += 10
+                                            topPaddingOffset += 21
                                         }
                                         
                                         // 両方正しく入力されていればログインAPIを実行
@@ -168,55 +175,56 @@ struct LoginView: View {
                             }
                             .padding(.top,30)
                             .padding(.horizontal,10)
-                        //}
-                        //.padding(.top,topPadding-topPaddingOffset)
-                        //.frame(maxWidth: .infinity)
+                            //}
+                            //.padding(.top,topPadding-topPaddingOffset)
+                            //.frame(maxWidth: .infinity)
+                        }
+                        .frame(maxHeight: 370 + topPaddingOffset)
                     }
-                    .frame(maxHeight: 390)
+                    .padding(.horizontal, 20)
+                    //.padding(.vertical, 40)
+                    .frame(maxWidth: .infinity)
+                    if isShowingModal {
+                        switch modalType {
+                        case .close :
+                            ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
+                        case .retry:
+                            ErrorRetryModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode,onRetry: {
+                                Task{
+                                    isLoading = true
+                                    // リトライする内容を分岐
+                                    if(lastAPI == "Login")
+                                    {
+                                        await LoginAPI()
+                                    }
+                                    else
+                                    {
+                                        await InitialLoginAPI()
+                                    }
+                                    isLoading = false
+                                }
+                            })
+                        case .back:
+                            ErrorBackModalView(isShowingModal: $isShowingModal,currentView: $currentView,messag: errorMessage,code: errorCode)
+                        default:
+                            EmptyView()
+                        }
+                    }
                 }
-                .padding(.horizontal, 20)
-                //.padding(.vertical, 40)
-                .frame(maxWidth: .infinity)
-                if isShowingModal {
-                    switch modalType {
-                    case .close :
-                        ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
-                    case .retry:
-                        ErrorRetryModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode,onRetry: {
-                            Task{
+                .onAppear {
+                    // 一回だけね
+                    if(oneShot)
+                    {
+                        oneShot = false
+                        Task {
+                            print("初回起動")
+                            if(initial_email != "" && initial_token != "")
+                            {
+                                print("初回ログイン実行")
                                 isLoading = true
-                                // リトライする内容を分岐
-                                if(lastAPI == "Login")
-                                {
-                                    await LoginAPI()
-                                }
-                                else
-                                {
-                                    await InitialLoginAPI()
-                                }
+                                await InitialLoginAPI()
                                 isLoading = false
                             }
-                        })
-                    case .back:
-                        ErrorBackModalView(isShowingModal: $isShowingModal,currentView: $currentView,messag: errorMessage,code: errorCode)
-                    default:
-                        EmptyView()
-                    }
-                }
-            }
-            .onAppear {
-                // 一回だけね
-                if(oneShot)
-                {
-                    oneShot = false
-                    Task {
-                        print("初回起動")
-                        if(initial_email != "" && initial_token != "")
-                        {
-                            print("初回ログイン実行")
-                            isLoading = true
-                            await InitialLoginAPI()
-                            isLoading = false
                         }
                     }
                 }

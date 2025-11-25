@@ -58,7 +58,6 @@ struct InputFieldBlock: View {
                                     .resizable()
                                     .frame(width: 20, height: 20)
                                     .foregroundColor(.gray)
-                                    .background(.white)
                             }
                             else
                             {
@@ -66,7 +65,6 @@ struct InputFieldBlock: View {
                                     .resizable()
                                     .frame(width: 20, height: 20)
                                     .foregroundColor(.gray)
-                                    .background(.white)
                             }
                         }
                         .buttonStyle(.plain)
@@ -109,6 +107,8 @@ struct InputFieldBlock: View {
             if let error = errorMessage {
                 Text(error)
                     .font(.footnote)
+                    .frame(height: 16)
+                    .padding(.top,5)
                     .foregroundColor(.red)
             }
         }
