@@ -85,6 +85,20 @@ struct WebContentView: View {
             KeychainHelper.shared.delete(key: "token")
             KeychainHelper.shared.delete(key: "email")
             
+        case "sendBrightness":
+            print("輝度送信")
+            var bright = UIScreen.main.brightness
+            
+            // 関数名やら引数やらを指定
+            let jsCode = "window.getBrightness('\(bright)')"
+                webView?.evaluateJavaScript(jsCode) { result, error in
+                    if let error = error {
+                        print("JS 実行エラー: \(error)")
+                    } else {
+                        print("setDeviceInfo 呼び出し成功")
+                    }
+                }
+            
         case "changeBrightness":
             print("輝度")
             let brightness = params?["brightness"] as? Float ?? 1.0
@@ -148,11 +162,21 @@ struct WebContentView: View {
             print("JS")
             // ここでページ内のJSを呼び出す
             // TODO:データは適当なので記憶してあるログイン情報を返せるようにすること
-            let token = "abc123"
-            let email = "test@example.com"
+            
+            var token = KeychainHelper.shared.read(key: "token")
+            var email = KeychainHelper.shared.read(key: "email")
+            
+            if(token == nil || email == nil)
+            {
+                token = "abc123"
+                email = "test@example.com"
+            }
+            
+            print(token)
+            print(email)
             
             // 関数名やら引数やらを指定
-            let jsCode = "window.setDeviceInfo('\(token)', '\(email)', '\(APP_VERSION)')"
+            let jsCode = "window.getDeviceData('\(token)', '\(email)', '\(APP_VERSION)')"
                 webView?.evaluateJavaScript(jsCode) { result, error in
                     if let error = error {
                         print("JS 実行エラー: \(error)")

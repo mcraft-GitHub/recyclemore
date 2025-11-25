@@ -68,6 +68,7 @@ struct HybridWebView: UIViewRepresentable {
         // web側で：window.webkit.messageHandlers.〇〇.postMessage("メッセージ") の〇〇部分が　name:　に入る
         // 複数のパターンがあるので言われるがままに登録していく
         config.userContentController.add(context.coordinator, name: "appHandler")
+        config.userContentController.add(context.coordinator, name: "sendBrightness")
         config.userContentController.add(context.coordinator, name: "changeBrightness")
         config.userContentController.add(context.coordinator, name: "logout")
         config.userContentController.add(context.coordinator, name: "goToLogin")
@@ -142,6 +143,13 @@ struct HybridWebView: UIViewRepresentable {
                 print("logout")
                 // イベント通知
                 parent.onCustomEvent("logout", nil)
+            }
+            
+            // 輝度送信要求
+            if message.name == "sendBrightness" {
+                print("sendBrightness")
+                // イベント通知
+                parent.onCustomEvent("sendBrightness", nil)
             }
             
             // 輝度変更要求
