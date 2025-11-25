@@ -169,8 +169,6 @@ struct LoginView: View {
                             .padding(.top,30)
                             .padding(.horizontal,10)
                         }
-                        //.padding(.horizontal, 20)
-                        .padding(.vertical, 40)
                         .padding(.top,topPadding-topPaddingOffset)
                         .frame(maxWidth: .infinity)
                     }
@@ -179,7 +177,6 @@ struct LoginView: View {
                 .padding(.horizontal, 20)
                 .padding(.vertical, 40)
                 .frame(maxWidth: .infinity)
-                .fixedSize(horizontal: false, vertical: true)
                 if isShowingModal {
                     switch modalType {
                     case .close :
