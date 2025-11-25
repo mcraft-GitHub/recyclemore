@@ -63,7 +63,7 @@ struct LoginView: View {
             ZStack {
                 // メインコンテンツ
                 VStack(spacing: 0) {
-                    ScrollView(.vertical, showsIndicators: false) {
+                    //ScrollView(.vertical, showsIndicators: false) {
                         VStack(spacing: 0) {
                             // アイコンとテキスト領域
                             HStack(spacing:12) {
@@ -168,14 +168,14 @@ struct LoginView: View {
                             }
                             .padding(.top,30)
                             .padding(.horizontal,10)
-                        }
-                        .padding(.top,topPadding-topPaddingOffset)
-                        .frame(maxWidth: .infinity)
+                        //}
+                        //.padding(.top,topPadding-topPaddingOffset)
+                        //.frame(maxWidth: .infinity)
                     }
-                    .frame(maxHeight: .infinity)
+                    .frame(maxHeight: 390)
                 }
                 .padding(.horizontal, 20)
-                .padding(.vertical, 40)
+                //.padding(.vertical, 40)
                 .frame(maxWidth: .infinity)
                 if isShowingModal {
                     switch modalType {
