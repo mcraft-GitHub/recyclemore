@@ -64,7 +64,7 @@ struct LoginView: View {
                 // メインコンテンツ
                 VStack(spacing: 0) {
                     ScrollView(.vertical, showsIndicators: false) {
-                        VStack(spacing: 32) {
+                        VStack(spacing: 0) {
                             // アイコンとテキスト領域
                             HStack(spacing:12) {
                                 Image("LoginIcon")
@@ -78,11 +78,12 @@ struct LoginView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .multilineTextAlignment(.center)
+                            .padding(.bottom, 40)
                             
                             // フォーム領域
                             VStack{
                                 LoginInputSectionView(email: $email, password: $password,currentView: $currentView,emailError: emailErrorMessage,passwordError: passwordErrorMessage
-                                    )
+                                )
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.top)
@@ -91,18 +92,20 @@ struct LoginView: View {
                             .cornerRadius(8)
                             
                             // ボタン領域
-                            HStack(spacing:20) {
+                            HStack(spacing:10) {
                                 Button(action: {
                                     print("戻るボタン")
                                     // スタート画面に戻る
                                     currentView = .web
                                 }) {
                                     Text("戻る")
-                                        .frame(maxWidth: .infinity)
-                                        .padding()
+                                        .frame(maxWidth: .infinity,minHeight: 20, maxHeight: 40)
+                                        .fontWeight(.bold)
                                         .background(Color.gray.opacity(0.3))
-                                        .cornerRadius(10)
+                                        .foregroundColor(.white)
+                                        .cornerRadius(6)
                                 }
+                                .frame(height: 40)
                                 
                                 Button(action: {
                                     Task {
@@ -153,22 +156,30 @@ struct LoginView: View {
                                             return // 未入力があれば進ませない
                                         }
                                     }
-                                }) {
+                                })                                {
                                     Text("ログイン")
-                                        .frame(maxWidth: .infinity)
-                                        .padding()
-                                        .background(Color.blue.opacity(0.3))
+                                        .frame(maxWidth: .infinity,minHeight: 20, maxHeight: 40)
+                                        .fontWeight(.bold)
+                                        .background(Color(hex: "#0099D9"))
                                         .foregroundColor(.white)
-                                        .cornerRadius(10)
+                                        .cornerRadius(6)
                                 }
+                                .frame(height: 40)
                             }
+                            .padding(.top,30)
+                            .padding(.horizontal,10)
                         }
-                        .padding(.horizontal, 20)
+                        //.padding(.horizontal, 20)
                         .padding(.vertical, 40)
                         .padding(.top,topPadding-topPaddingOffset)
                         .frame(maxWidth: .infinity)
                     }
+                    .frame(maxHeight: .infinity)
                 }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 40)
+                .frame(maxWidth: .infinity)
+                .fixedSize(horizontal: false, vertical: true)
                 if isShowingModal {
                     switch modalType {
                     case .close :
@@ -298,17 +309,17 @@ struct LoginView: View {
                         isShowingModal = true
                         
                         /*
-                        print("仮成功模擬")
-                        MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest2.php"
-                        currentView = .web
-                        */
+                         print("仮成功模擬")
+                         MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest2.php"
+                         currentView = .web
+                         */
                     }
                     else if(StatusCode == 401){
                         errorMessage = ERROR_MES_LOGIN_HEAVY
                         errorCode = ""
                         modalType = .back
                         isShowingModal = true
-
+                        
                     }
                     else if(StatusCode == 429) {
                         errorMessage = ERROR_MES_429
@@ -444,17 +455,17 @@ struct LoginView: View {
                         isShowingModal = true
                         
                         /*
-                        print("仮成功模擬")
-                        MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest2.php"
-                        currentView = .web
-                        */
+                         print("仮成功模擬")
+                         MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest2.php"
+                         currentView = .web
+                         */
                     }
                     else if(StatusCode == 401){
                         errorMessage = ERROR_MES_LOGIN_HEAVY
                         errorCode = ""
                         modalType = .back
                         isShowingModal = true
-
+                        
                     }
                     else if(StatusCode == 429) {
                         errorMessage = ERROR_MES_429

@@ -49,18 +49,31 @@ struct InputFieldBlock: View {
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
                         // トグルで変えるならこっち
-                        /*
                         Button(action: {
-                            isOpen.toggle()
+                            isHidden.toggle()
                         }) {
-                            Image(systemName: isHidden ? "eye.slash" : "eye")
-                                .foregroundColor(.gray)
-                                .background(.white)
+                            if(isHidden)
+                            {
+                                Image("passeye")
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                                    .foregroundColor(.gray)
+                                    .background(.white)
+                            }
+                            else
+                            {
+                                Image("passeye_c")
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                                    .foregroundColor(.gray)
+                                    .background(.white)
+                            }
                         }
                         .buttonStyle(.plain)
-                        */
+                        
                         
                         // 押してる間だけ見えるならこっち
+                        /*
                         Image(systemName: "eye")
                                 .foregroundColor(.gray)
                                 .gesture(
@@ -74,6 +87,7 @@ struct InputFieldBlock: View {
                                             isHidden = true
                                         }
                                 )
+                         */
                     }
                     .padding(.horizontal, 8)
                     .frame(height: 40)
@@ -83,9 +97,11 @@ struct InputFieldBlock: View {
                 {
                     TextField("",text:$text)
                         .frame(height: 40)
+                        .padding(.horizontal, 10)
                         .background(RoundedRectangle(cornerRadius: 0).fill(hasError ? Color(hex: "#FFF3F3") : Color.white))
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
+                        
                 }
             }
             
