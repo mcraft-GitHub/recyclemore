@@ -95,6 +95,12 @@ struct LoginView: View {
                             .padding(.bottom)
                             .background(Color(hex: "#F7F8F8"))
                             .cornerRadius(6)
+                            .shadow(
+                                color: Color.black.opacity(0.2),
+                                radius: 6,
+                                x: 0,
+                                y: 1
+                            )
                             
                             // ボタン領域
                             HStack(spacing:10) {
@@ -111,6 +117,12 @@ struct LoginView: View {
                                         .cornerRadius(6)
                                 }
                                 .frame(height: 40)
+                                .shadow(
+                                    color: Color.black.opacity(0.3),
+                                    radius: 6,
+                                    x: 0,
+                                    y: 1
+                                )
                                 
                                 Button(action: {
                                     Task {
@@ -172,6 +184,12 @@ struct LoginView: View {
                                         .cornerRadius(6)
                                 }
                                 .frame(height: 40)
+                                .shadow(
+                                    color: Color.black.opacity(0.3),
+                                    radius: 6,
+                                    x: 0,
+                                    y: 1
+                                )
                             }
                             .padding(.top,30)
                             .padding(.horizontal,10)
