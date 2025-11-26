@@ -429,6 +429,10 @@ struct LoginView: View {
                         KeychainHelper.shared.save(Appvisor.appvisorUDID(), key: "token")
                         KeychainHelper.shared.save(initial_email, key: "email")
                         
+                        // 使い終わった初回用データは消してしまう
+                        initial_email = ""
+                        initial_token = ""
+                        
                         // 表示する画面を切り替える
                         if(Server == "Dev")
                         {
@@ -445,6 +449,11 @@ struct LoginView: View {
                 {
                     await MainActor.run {
                         print("デコード失敗")
+                        
+                        // 使い終わった初回用データは消してしまう
+                        initial_email = ""
+                        initial_token = ""
+                        
                         errorMessage = ERROR_MES_LOGIN_HEAVY
                         errorCode = "[エラーコード : 999]"
                         modalType = .back
@@ -454,6 +463,10 @@ struct LoginView: View {
             }
             else
             {
+                // 使い終わった初回用データは消してしまう
+                initial_email = ""
+                initial_token = ""
+                
                 await MainActor.run {
                     // 結果に問題があったのでステータスに応じたモーダルを表示
                     if(StatusCode == 400) {
@@ -501,6 +514,10 @@ struct LoginView: View {
             }
         }
         catch {
+            // 使い終わった初回用データは消してしまう
+            initial_email = ""
+            initial_token = ""
+            
             await MainActor.run {
                 if error is URLError {
                     // 通信失敗として処理
