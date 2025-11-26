@@ -108,7 +108,7 @@ struct SplashView: View {
                     email = KeychainHelper.shared.read(key: "email")
                     
                     // トークンかメアドが保存されていなければ遷移先をスタート画面にする
-                    if(token == nil || email == nil)
+                    if(token != nil || email == nil)
                     {
                         print("スタート画面へ")
                         if(Server == "Dev")
@@ -145,7 +145,7 @@ struct SplashView: View {
         
         // 送信データ
         let params = [
-            "OS":"iOS",
+            "os":"iOS",
         ] as [String:Any]
         
         do {
@@ -260,7 +260,7 @@ struct SplashView: View {
         let params = [
             "mail":email!,
             "token":token!,
-            "OS":"iOS",
+            "os":"iOS",
         ] as [String:Any]
         
         do {

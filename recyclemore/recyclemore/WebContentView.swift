@@ -153,6 +153,7 @@ struct WebContentView: View {
             let token = params?["token"] as? String ?? ""
             if(mail != "" && token != "")
             {
+                print("初回ログイン")
                 initial_email = mail
                 initial_token = token
             }

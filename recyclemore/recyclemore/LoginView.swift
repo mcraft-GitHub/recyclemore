@@ -245,8 +245,10 @@ struct LoginView: View {
             "mail":email,
             "password":password,
             "token":Appvisor.appvisorUDID(),
-            "OS":"iOS",
+            "os":"iOS",
         ] as [String:Any]
+        
+        print(params)
         
         do {
             //リクエストデータの作成
@@ -384,8 +386,10 @@ struct LoginView: View {
             "mail":initial_email,
             "initial_token":initial_token,
             "token":Appvisor.appvisorUDID(),
-            "OS":"iOS",
+            "os":"iOS",
         ] as [String:Any]
+        
+        print(params)
         
         do {
             //リクエストデータの作成
@@ -531,23 +535,25 @@ struct LoginView: View {
             return false
         }
         
-        var hasNumber = false   // 数字
-        var hasLetter = false   // アルファベット
-        var hasSymbol = false   // 記号
-        
-        // 文字種を頭から調査
+        var hasUppercase = false    //大文字
+        var hasLowercase = false    //小文字
+        var hasNumber = false       //数字
+        var hasSymbol = false       //記号
+
         for char in password {
-            if char.isNumber {
+            if char.isUppercase {
+                hasUppercase = true
+            } else if char.isLowercase {
+                hasLowercase = true
+            } else if char.isNumber {
                 hasNumber = true
-            } else if char.isLetter {
-                hasLetter = true
             } else {
                 hasSymbol = true
             }
         }
         
-        // ３種盛りの完成を確認
-        let typeCount = [hasNumber, hasLetter, hasSymbol].filter { $0 }.count
+        // 4種盛りの完成を確認
+        let typeCount = [hasNumber, hasUppercase, hasLowercase, hasSymbol].filter { $0 }.count
         return typeCount >= 3
     }
 }
