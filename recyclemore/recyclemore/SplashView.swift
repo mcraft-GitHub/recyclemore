@@ -34,11 +34,8 @@ struct SplashView: View {
                     Image("SplashLogo")
                         .resizable()
                         .scaledToFit()
-                        // 基準サイズ390x844を元に比率を出してスケーリング
-                        .frame(
-                            width: geometry.size.width * (156 /  CGFloat(BASE_SCREEN_WIDTH)),
-                            height: geometry.size.height * (242 / CGFloat(BASE_SCREEN_HEIGHT))
-                        )
+                        .frame(width: geometry.size.width * 0.4)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 if isShowingModal {
