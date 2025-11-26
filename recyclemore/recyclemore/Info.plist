@@ -21,7 +21,5 @@
 		<string>remote-notification</string>
 		<string>processing</string>
 	</array>
-    <key>UIUserInterfaceStyle</key>
-    <string>Light</string>
 </dict>
 </plist>
