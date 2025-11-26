@@ -93,8 +93,8 @@ struct LoginView: View {
                             .frame(maxWidth: .infinity)
                             .padding(.top)
                             .padding(.bottom)
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
+                            .background(Color(hex: "#F7F8F8"))
+                            .cornerRadius(6)
                             
                             // ボタン領域
                             HStack(spacing:10) {
@@ -106,7 +106,7 @@ struct LoginView: View {
                                     Text("戻る")
                                         .frame(maxWidth: .infinity,minHeight: 20, maxHeight: 40)
                                         .fontWeight(.bold)
-                                        .background(Color.gray.opacity(0.3))
+                                        .background(Color(hex: "#9FA0A0"))
                                         .foregroundColor(.white)
                                         .cornerRadius(6)
                                 }

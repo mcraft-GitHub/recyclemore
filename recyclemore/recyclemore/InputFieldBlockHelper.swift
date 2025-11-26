@@ -23,7 +23,7 @@ struct InputFieldBlock: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
-                .font(.system(size: 14,weight: .bold))
+                .font(.system(size: 15,weight: .bold))
                 .frame(height: 20)
             
             // 枠線の設定(エラーがある時は赤くなる)
@@ -106,7 +106,7 @@ struct InputFieldBlock: View {
             // エラーがある時だけ表示されるメッセージ
             if let error = errorMessage {
                 Text(error)
-                    .font(.footnote)
+                    .font(.system(size: 12))
                     .frame(height: 16)
                     .padding(.top,5)
                     .foregroundColor(.red)

@@ -17,7 +17,7 @@ struct LoginInputSectionView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing:24) {
+            VStack(spacing:20) {
                 // メールアドレス入力ブロック
                 InputFieldBlock(label: "メールアドレス", text: $email, errorMessage: emailError, isSecure: false)
                 
@@ -27,9 +27,12 @@ struct LoginInputSectionView: View {
                 // テキスト+アイコン
                 HStack(spacing : 8) {
                     Text("パスワードを忘れた方")
-                        .font(.system(size: 14))
+                        .lineSpacing(0)
+                            .frame(height: 20)
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 14,weight: .bold))
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 6, height: 10)
                 }
                 .frame(maxWidth: .infinity)
                 .onTapGesture {
