@@ -21,7 +21,7 @@ struct InputFieldBlock: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 5) {
             Text(label)
                 .font(.system(size: 15,weight: .bold))
                 .frame(height: 20)
@@ -108,7 +108,6 @@ struct InputFieldBlock: View {
                 Text(error)
                     .font(.system(size: 12))
                     .frame(height: 16)
-                    .padding(.top,5)
                     .foregroundColor(.red)
             }
         }

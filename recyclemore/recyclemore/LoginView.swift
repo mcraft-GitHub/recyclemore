@@ -48,7 +48,6 @@ struct LoginView: View {
                         
                         Image("HeaderLogo")
                             .resizable()
-                        //.scaledToFit()
                             .frame(
                                 width: 177.5,
                                 height: 30)
@@ -68,7 +67,6 @@ struct LoginView: View {
                 ZStack {
                     // メインコンテンツ
                     VStack(spacing: 0) {
-                        //ScrollView(.vertical, showsIndicators: false) {
                         VStack(spacing: 0) {
                             // アイコンとテキスト領域
                             HStack(spacing:12) {
@@ -193,9 +191,6 @@ struct LoginView: View {
                             }
                             .padding(.top,30)
                             .padding(.horizontal,10)
-                            //}
-                            //.padding(.top,topPadding-topPaddingOffset)
-                            //.frame(maxWidth: .infinity)
                         }
                         .frame(maxHeight: 370 + topPaddingOffset)
                     }
@@ -258,11 +253,18 @@ struct LoginView: View {
             return
         }
         
+        var sendtoken = Appvisor.appvisorUDID()
+        
+        if(Server == "Dev")
+        {
+            sendtoken = "Success"
+        }
+        
         // 送信データ
         let params = [
             "mail":email,
             "password":password,
-            "token":Appvisor.appvisorUDID(),
+            "token":sendtoken,
             "os":"iOS",
         ] as [String:Any]
         
@@ -303,11 +305,19 @@ struct LoginView: View {
                         SharedUserData.userData = UserData(is_tel_verified: decoded.item.is_tel_verified, is_user_registered: decoded.item.is_user_registered, is_age_verified: decoded.item.is_age_verified)
                         
                         // ログインに成功した情報を端末に保存する
-                        KeychainHelper.shared.save(Appvisor.appvisorUDID(), key: "token")
+                        KeychainHelper.shared.save(sendtoken, key: "token")
                         KeychainHelper.shared.save(email, key: "email")
                         
                         // 表示する画面を切り替える
-                        // TODO:ホーム画面のURLを設定する
+                        print("ホーム画面へ")
+                        if(Server == "Dev")
+                        {
+                            MultiViewURL = BaseURL_Dev + HomeDir
+                        }
+                        else
+                        {
+                            MultiViewURL = BaseURL_Dis + HomeDir
+                        }
                         currentView = .web
                     }
                 }
@@ -399,11 +409,18 @@ struct LoginView: View {
             return
         }
         
+        var sendtoken = Appvisor.appvisorUDID()
+        
+        if(Server == "Dev")
+        {
+            sendtoken = "Success"
+        }
+        
         // 送信データ
         let params = [
             "mail":initial_email,
             "initial_token":initial_token,
-            "token":Appvisor.appvisorUDID(),
+            "token":sendtoken,
             "os":"iOS",
         ] as [String:Any]
         
@@ -440,11 +457,11 @@ struct LoginView: View {
             // ログインに成功していれば
             if httpResponse.statusCode == 200
             {
-                if let decoded = try? JSONDecoder().decode(LoginResponse.self, from: data) {
+                if let decoded = try? JSONDecoder().decode(InitialLoginResponse.self, from: data) {
                     await MainActor.run{
                         // 結果からユーザー情報は作れない
                         // ログインに成功した情報を端末に保存する
-                        KeychainHelper.shared.save(Appvisor.appvisorUDID(), key: "token")
+                        KeychainHelper.shared.save(sendtoken, key: "token")
                         KeychainHelper.shared.save(initial_email, key: "email")
                         
                         // 使い終わった初回用データは消してしまう

@@ -112,11 +112,23 @@ struct LoginItemResponse: Codable{
     let is_tel_verified: String
     let is_user_registered: String
     let is_age_verified: String
+    let now_version: String
+    let need_version: String
+}
+
+struct InitialLoginItemResponse: Codable{
+    let now_version: String
+    let need_version: String
 }
 
 struct LoginResponse: Codable {
     let result_code: String
     let item: LoginItemResponse
+}
+
+struct InitialLoginResponse: Codable {
+    let result_code: String
+    let item: InitialLoginItemResponse
 }
 
 // セマンティックを考慮したバージョン比較関数
