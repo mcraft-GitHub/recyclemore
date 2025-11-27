@@ -175,7 +175,6 @@ struct WebContentView: View {
             print(email!)
             
             // 関数名やら引数やらを指定
-            //let jsCode = "window.getDeviceData('\(token!)', '\(email!)', '\(APP_VERSION)')"
             let jsCode = "window.getDeviceData('\(token!)', '\(email!)', '\(APP_VERSION)')"
             webView?.evaluateJavaScript(jsCode) { result, error in
                 if let error = error {
