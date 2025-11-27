@@ -87,7 +87,7 @@ struct WebContentView: View {
             
         case "sendBrightness":
             print("輝度送信")
-            var bright = UIScreen.main.brightness
+            let bright = UIScreen.main.brightness
             
             // 関数名やら引数やらを指定
             let jsCode = "window.getBrightness('\(bright)')"
@@ -162,8 +162,6 @@ struct WebContentView: View {
         case "sendLoginInfo":
             print("JS")
             // ここでページ内のJSを呼び出す
-            // TODO:データは適当なので記憶してあるログイン情報を返せるようにすること
-            
             var token = KeychainHelper.shared.read(key: "token")
             var email = KeychainHelper.shared.read(key: "email")
             
@@ -173,11 +171,11 @@ struct WebContentView: View {
                 email = "test@example.com"
             }
             
-            print(token)
-            print(email)
+            print(token!)
+            print(email!)
             
             // 関数名やら引数やらを指定
-            let jsCode = "window.getDeviceData('\(token)', '\(email)', '\(APP_VERSION)')"
+            let jsCode = "window.getDeviceData('\(token!)', '\(email!)', '\(APP_VERSION)')"
                 webView?.evaluateJavaScript(jsCode) { result, error in
                     if let error = error {
                         print("JS 実行エラー: \(error)")
