@@ -167,8 +167,8 @@ struct WebContentView: View {
             
             if(token == nil || email == nil)
             {
-                token = "abc123"
-                email = "test@example.com"
+                token = ""
+                email = ""
             }
             
             print(token!)
