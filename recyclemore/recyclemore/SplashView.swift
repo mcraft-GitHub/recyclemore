@@ -105,7 +105,7 @@ struct SplashView: View {
                     email = KeychainHelper.shared.read(key: "email")
                     
                     // トークンかメアドが保存されていなければ遷移先をスタート画面にする
-                    if(token != nil || email == nil)
+                    if(token == nil || email == nil)
                     {
                         print("スタート画面へ")
                         if(Server == "Dev")
@@ -122,9 +122,6 @@ struct SplashView: View {
                     else
                     {
                         print("ホーム画面へ")
-                        // TODO:見ての通りテスト用のダミーデータ　消すこと
-                        //token = "aa"
-                        //email = "aa"
                         await AutoLoginAPI()
                     }
                 }
@@ -307,6 +304,9 @@ struct SplashView: View {
                 }
                 else
                 {
+                    // 失敗する情報を削除
+                    KeychainHelper.shared.delete(key: "token")
+                    KeychainHelper.shared.delete(key: "email")
                     await MainActor.run {
                         print("デコード失敗")
                         isError = true
@@ -319,6 +319,10 @@ struct SplashView: View {
             else
             {
                 await MainActor.run {
+                    
+                    // 失敗する情報を削除
+                    KeychainHelper.shared.delete(key: "token")
+                    KeychainHelper.shared.delete(key: "email")
                     
                     // 結果に問題があったのでステータスに応じたモーダルを表示
                     if(StatusCode == 400) {
@@ -359,6 +363,10 @@ struct SplashView: View {
             }
         }
         catch {
+            // 失敗する情報を削除
+            KeychainHelper.shared.delete(key: "token")
+            KeychainHelper.shared.delete(key: "email")
+            
             await MainActor.run {
                 if error is URLError {
                     // 通信失敗として処理

@@ -105,6 +105,14 @@ struct LoginView: View {
                                 Button(action: {
                                     print("戻るボタン")
                                     // スタート画面に戻る
+                                    if(Server == "Dev")
+                                    {
+                                        MultiViewURL = BaseURL_Dev + StartDir
+                                    }
+                                    else
+                                    {
+                                        MultiViewURL = BaseURL_Dis + StartDir
+                                    }
                                     currentView = .web
                                 }) {
                                     Text("戻る")

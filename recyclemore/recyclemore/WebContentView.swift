@@ -91,13 +91,13 @@ struct WebContentView: View {
             
             // 関数名やら引数やらを指定
             let jsCode = "window.getBrightness('\(bright)')"
-                webView?.evaluateJavaScript(jsCode) { result, error in
-                    if let error = error {
-                        print("JS 実行エラー: \(error)")
-                    } else {
-                        print("setDeviceInfo 呼び出し成功")
-                    }
+            webView?.evaluateJavaScript(jsCode) { result, error in
+                if let error = error {
+                    print("JS 実行エラー: \(error)")
+                } else {
+                    print("setDeviceInfo 呼び出し成功")
                 }
+            }
             
         case "changeBrightness":
             print("輝度")
@@ -113,30 +113,30 @@ struct WebContentView: View {
                 original = UIScreen.main.brightness
                 UIScreen.main.brightness = CGFloat(brightness)
             }
-        
+            
         case "openWebsite":
             print("ブラウザオープン")
             let res = params?["url"] as? String ?? ""
             if let url = URL(string: res) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
-        
-            /*
-        case "first":
-            print("JS")
-            // ここでページ内のJSを呼び出す
-            let token = "abc123"
-            let email = "test@example.com"
             
-            // 関数名やら引数やらを指定
-            let jsCode = "window.setDeviceInfo('\(token)', '\(email)', '\(APP_VERSION)')"
-                webView?.evaluateJavaScript(jsCode) { result, error in
-                    if let error = error {
-                        print("JS 実行エラー: \(error)")
-                    } else {
-                        print("setDeviceInfo 呼び出し成功")
-                    }
-                }
+            /*
+             case "first":
+             print("JS")
+             // ここでページ内のJSを呼び出す
+             let token = "abc123"
+             let email = "test@example.com"
+             
+             // 関数名やら引数やらを指定
+             let jsCode = "window.setDeviceInfo('\(token)', '\(email)', '\(APP_VERSION)')"
+             webView?.evaluateJavaScript(jsCode) { result, error in
+             if let error = error {
+             print("JS 実行エラー: \(error)")
+             } else {
+             print("setDeviceInfo 呼び出し成功")
+             }
+             }
              */
         case "network_error":
             print("通信エラーですよ")
@@ -146,7 +146,7 @@ struct WebContentView: View {
             isShowingModal = true
             
             // TODO:エラー出しても現状進行不能なのでその後どうするかは要確認
-        
+            
         case "goToLogin":
             print("ログイン画面へ")
             let mail = params?["mail"] as? String ?? ""
@@ -175,14 +175,15 @@ struct WebContentView: View {
             print(email!)
             
             // 関数名やら引数やらを指定
+            //let jsCode = "window.getDeviceData('\(token!)', '\(email!)', '\(APP_VERSION)')"
             let jsCode = "window.getDeviceData('\(token!)', '\(email!)', '\(APP_VERSION)')"
-                webView?.evaluateJavaScript(jsCode) { result, error in
-                    if let error = error {
-                        print("JS 実行エラー: \(error)")
-                    } else {
-                        print("setDeviceInfo 呼び出し成功")
-                    }
+            webView?.evaluateJavaScript(jsCode) { result, error in
+                if let error = error {
+                    print("JS 実行エラー: \(error)")
+                } else {
+                    print("setDeviceInfo 呼び出し成功")
                 }
+            }
         default:
             print("なんかされた")
         }
