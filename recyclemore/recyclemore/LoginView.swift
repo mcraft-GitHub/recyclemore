@@ -265,7 +265,7 @@ struct LoginView: View {
         
         if(Server == "Dev")
         {
-            sendtoken = "Success"
+            //sendtoken = "Success"
         }
         
         // 送信データ
@@ -421,7 +421,7 @@ struct LoginView: View {
         
         if(Server == "Dev")
         {
-            sendtoken = "Success"
+            //sendtoken = "Success"
         }
         
         // 送信データ
