@@ -7,6 +7,7 @@
 
 import AppVisorSDK
 import UIKit
+import UserNotifications
 
 // デリゲート、OSが都合よく呼んでくれる子達
 class AppDelegate: NSObject,UIApplicationDelegate,UNUserNotificationCenterDelegate {
@@ -21,7 +22,23 @@ class AppDelegate: NSObject,UIApplicationDelegate,UNUserNotificationCenterDelega
         Appvisor.sharedInstance.enablePush(with:AppvisorAppID, isDebug: true)
         Appvisor.sharedInstance.trackPush(with: userInfo)
         
+        requestPushPermission()
+        
         return true
+    }
+    
+    func requestPushPermission(){
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]){ granted, error in
+            if granted {
+                print("一応成功側？")
+                DispatchQueue.main.async {
+                    print("実行")
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            } else {
+                print("通知許可されなかった: \(error?.localizedDescription ?? "")")
+            }
+        }
     }
 
     // アプリがフォアグラウンドに来た
@@ -30,15 +47,32 @@ class AppDelegate: NSObject,UIApplicationDelegate,UNUserNotificationCenterDelega
         print("戻った")
     }
     
-    // デバイストークン登録成功
+    // デバイストークン登録成功 先方資料の簡易版
+    /*
     func application(_ application:UIApplication,didRegisterForRemoteNotificationsWithDeviceToken deviceToken:Data) {
         print("成功")
         Appvisor.sharedInstance.registerToken(with: deviceToken, completion: {_ in})
     }
+     */
+    
+    // デバイストークン登録成功 公式資料バージョン
+    func application(_ application:UIApplication,didRegisterForRemoteNotificationsWithDeviceToken deviceToken:Data) {
+        Appvisor.sharedInstance.registerToken(with: deviceToken) { result in
+            if !result.isSuccess {
+                print("失敗B")
+                debugPrint("code:${result?.error.code} message:${result.error.message}")
+            }
+            else
+            {
+                print("成功A")
+            }
+        }
+    }
     
     // デバイストークン取登録失敗
-    func application(_ application:UIApplication, didfailToRemoteNotificationWithError error:Error) {
-        print("エラー")
+    func application(_ application:UIApplication, didFailToRegisterForRemoteNotificationsWithError error:Error) {
+        print("失敗A")
+        print("Error in registration. Error:\(error)")
     }
     
     func userNotificationCenter(_ center:UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
