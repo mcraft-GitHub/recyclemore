@@ -7,38 +7,25 @@
 
 import AppVisorSDK
 import UIKit
-import UserNotifications
 
 // デリゲート、OSが都合よく呼んでくれる子達
 class AppDelegate: NSObject,UIApplicationDelegate,UNUserNotificationCenterDelegate {
-    //var notificationDetails = notificationDetails()
+    
     // 最初に呼ばれる関数
     func application(_ applications: UIApplication,didFinishLaunchingWithOptions launchOptions:[UIApplication.LaunchOptionsKey : Any]? = nil)-> Bool {
+
         UNUserNotificationCenter.current().delegate = self
         
         let userInfo = launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification] as? [String:Any]
         
-        let AppvisorAppID = "08207eeda3f64a280c17fb1a3a5f28653a21b31510474c60fcae1f519856fc7aa5b9234baaab710bb9d7a67c482cce48bb369730bfb6bd93562ffce87dcfe096"
-        Appvisor.sharedInstance.enablePush(with:AppvisorAppID, isDebug: true)
+        // 資料がAppvisorAppID = <APP_VISOR_API_KEY>となってるが変数名から正解を推察した
+        let AppvisorAppKey = "e59c36571a"
+        
+        // 実質的にSDKの初期化（内部でOSへの許可取りやトークンの設定まで行われる）
+        Appvisor.sharedInstance.enablePush(with:AppvisorAppKey, isDebug: true)
         Appvisor.sharedInstance.trackPush(with: userInfo)
         
-        requestPushPermission()
-        
         return true
-    }
-    
-    func requestPushPermission(){
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]){ granted, error in
-            if granted {
-                print("一応成功側？")
-                DispatchQueue.main.async {
-                    print("実行")
-                    UIApplication.shared.registerForRemoteNotifications()
-                }
-            } else {
-                print("通知許可されなかった: \(error?.localizedDescription ?? "")")
-            }
-        }
     }
 
     // アプリがフォアグラウンドに来た
@@ -47,43 +34,34 @@ class AppDelegate: NSObject,UIApplicationDelegate,UNUserNotificationCenterDelega
         print("戻った")
     }
     
-    // デバイストークン登録成功 先方資料の簡易版
-    /*
-    func application(_ application:UIApplication,didRegisterForRemoteNotificationsWithDeviceToken deviceToken:Data) {
-        print("成功")
-        Appvisor.sharedInstance.registerToken(with: deviceToken, completion: {_ in})
-    }
-     */
-    
-    // デバイストークン登録成功 公式資料バージョン
+    // デバイストークン登録処理
+    // APNsのデバイストークンが取得できた際に呼ばれる
     func application(_ application:UIApplication,didRegisterForRemoteNotificationsWithDeviceToken deviceToken:Data) {
         Appvisor.sharedInstance.registerToken(with: deviceToken) { result in
             if !result.isSuccess {
-                print("失敗B")
-                debugPrint("code:${result?.error.code} message:${result.error.message}")
+                print("デバイストークンの登録成功失敗")
+                debugPrint("code:\(result.error?.code) message:\(result.error?.message)")
             }
             else
             {
-                print("成功A")
+                print("デバイストークンの登録成功")
             }
         }
     }
     
-    // デバイストークン取登録失敗
+    // デバイストークン取得失敗
     func application(_ application:UIApplication, didFailToRegisterForRemoteNotificationsWithError error:Error) {
-        print("失敗A")
-        print("Error in registration. Error:\(error)")
+        print("デバイストークンの取得に失敗")
     }
     
     func userNotificationCenter(_ center:UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.badge,.banner,.list]);
-        // ここでフォアグラウンドプレゼンテーションのためのアクションを処理する
+        // 必要ならここでフォアグラウンドプレゼンテーションのためのアクションを処理する
     }
     
+    // 通知がタップされた際の処理
     func userNotificationCenter(_ center:UNUserNotificationCenter, didReceive response:UNNotificationResponse, withCompletionHandler completionHandler: @escaping() -> Void) {
-        // #if !TARGET_IPHONE_SIMULATOR
         let notification = response.notification
-        //notificationDetails.notification = notification
         
         // 通知からのデータ抽出
         let title = notification.request.content.title
@@ -112,6 +90,5 @@ class AppDelegate: NSObject,UIApplicationDelegate,UNUserNotificationCenterDelega
         
         // 他の仕事を続ける
         completionHandler()
-        // #endif
     }
 }

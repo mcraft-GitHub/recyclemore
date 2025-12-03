@@ -72,18 +72,6 @@ struct SplashView: View {
                             }
                         }
                     }
-                    /*
-                    Appvisor.sharedInstance.setPushStatus(true){ success in
-                        if success {
-                            print("成功")
-                        }
-                        else
-                        {
-                            print("失敗")
-                        }
-                    }*/
-                    
-                    //print("受信可能：\(Appvisor.sharedInstance.canReceivePush())")
                     
                     // バージョンチェックAPIを実行
                     await GetAppVersionAPI()
