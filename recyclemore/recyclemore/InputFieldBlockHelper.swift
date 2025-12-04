@@ -14,6 +14,9 @@ struct InputFieldBlock: View {
     let errorMessage: String?   //エラーメッセージ
     var isSecure:Bool = false   //秘匿性の有無
     @State private var isHidden: Bool = true    // パスワードのチラ見せ用
+    // 親ビューの FocusState の Binding を受け取る
+    @FocusState.Binding var focusedField: LoginInputSectionView.Field?
+    let fieldType: LoginInputSectionView.Field
     
     // エラーメッセージの存在をチェック
     var hasError: Bool {
@@ -40,12 +43,16 @@ struct InputFieldBlock: View {
                                 SecureField("", text: $text)
                                     .frame(height: 40)
                                     .background(RoundedRectangle(cornerRadius: 0).fill(hasError ? Color(hex: "#FFF3F3") : Color.white))
-                                    .keyboardType(.asciiCapable)       // パスワードは英字キーボード
+                                    .keyboardType(.asciiCapable)
+                                    .submitLabel(.done)
+                                    .focused($focusedField, equals: fieldType)
                             } else {
                                 TextField("", text: $text)
                                     .frame(height: 40)
                                     .background(RoundedRectangle(cornerRadius: 0).fill(hasError ? Color(hex: "#FFF3F3") : Color.white))
-                                    .keyboardType(.emailAddress)       // メールアドレス用
+                                    .keyboardType(.asciiCapable)
+                                    .submitLabel(.done)
+                                    .focused($focusedField, equals: fieldType)
                             }
                         }
                         .autocapitalization(.none)
@@ -99,9 +106,15 @@ struct InputFieldBlock: View {
                         .frame(height: 40)
                         .padding(.horizontal, 10)
                         .background(RoundedRectangle(cornerRadius: 0).fill(hasError ? Color(hex: "#FFF3F3") : Color.white))
+                        .keyboardType(.emailAddress)
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
-                        
+                        .focused($focusedField, equals: .email)
+                        .submitLabel(.next)
+                        .onSubmit {
+                            print("メールサブミット")
+                            focusedField = .password
+                        }
                 }
             }
             
@@ -118,5 +131,18 @@ struct InputFieldBlock: View {
 
 // プレビューする時に渡される状態を定義
 #Preview {
-    InputFieldBlock(label: "ラベル",text: .constant("入力値"),errorMessage: "エラー", isSecure: false)
+    //@FocusState private var focusedField: LoginInputSectionView.Field?
+    //InputFieldBlock(label: "ラベル",text: .constant("入力値"),errorMessage: "エラー", isSecure: false, focusedField: <#FocusState<LoginInputSectionView.Field?>.Binding#> , fieldType: .email)
+    
+    //@State var text = ""
+    @FocusState var focusedField: LoginInputSectionView.Field?
+    
+    InputFieldBlock(
+        label: "ラベル",
+        text: .constant(""),
+        errorMessage: "エラー",
+        isSecure: false,
+        focusedField: $focusedField,
+        fieldType: .email
+    )
 }

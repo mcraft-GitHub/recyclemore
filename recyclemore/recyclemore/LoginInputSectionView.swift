@@ -14,15 +14,17 @@ struct LoginInputSectionView: View {
     @Binding var currentView: AppViewMode
     var emailError: String?
     var passwordError: String?
+    enum Field { case email, password }
+    @FocusState private var focusedField: Field?
     
     var body: some View {
         ScrollView {
             VStack(spacing:20) {
                 // メールアドレス入力ブロック
-                InputFieldBlock(label: "メールアドレス", text: $email, errorMessage: emailError, isSecure: false)
+                InputFieldBlock(label: "メールアドレス", text: $email, errorMessage: emailError, isSecure: false,focusedField: $focusedField, fieldType: .email)
                 
                 // パスワード入力ブロック
-                InputFieldBlock(label: "パスワード", text: $password, errorMessage: passwordError,isSecure: true)
+                InputFieldBlock(label: "パスワード", text: $password, errorMessage: passwordError,isSecure: true,focusedField: $focusedField, fieldType: .password)
                 
                 // テキスト+アイコン
                 HStack(spacing : 8) {
