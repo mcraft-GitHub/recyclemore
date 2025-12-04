@@ -40,10 +40,12 @@ struct InputFieldBlock: View {
                                 SecureField("", text: $text)
                                     .frame(height: 40)
                                     .background(RoundedRectangle(cornerRadius: 0).fill(hasError ? Color(hex: "#FFF3F3") : Color.white))
+                                    .keyboardType(.asciiCapable)       // パスワードは英字キーボード
                             } else {
                                 TextField("", text: $text)
                                     .frame(height: 40)
                                     .background(RoundedRectangle(cornerRadius: 0).fill(hasError ? Color(hex: "#FFF3F3") : Color.white))
+                                    .keyboardType(.emailAddress)       // メールアドレス用
                             }
                         }
                         .autocapitalization(.none)

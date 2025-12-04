@@ -65,7 +65,7 @@ var BaseURL_Dis = "https://app.recyeclemore.jp/"
 
 let StartDir = "start"
 let HomeDir = "home"
-let CreateDir = "account/account-create/4"
+let CreateDir = "account/account-create/1"
 let ForgetDir = "account/forget/1"
 
 
