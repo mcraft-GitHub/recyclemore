@@ -64,6 +64,15 @@ struct HybridWebView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         
+        let preferences = WKWebpagePreferences()
+        
+        if #available(iOS 15.0, *) {
+            print("初期 preferredContentMode =",
+                      config.defaultWebpagePreferences.preferredContentMode.rawValue)
+            preferences.preferredContentMode = .mobile
+        }
+        config.defaultWebpagePreferences = preferences
+        
         // PostMessage機構用のハンドラー登録
         // web側で：window.webkit.messageHandlers.〇〇.postMessage("メッセージ") の〇〇部分が　name:　に入る
         // 複数のパターンがあるので言われるがままに登録していく

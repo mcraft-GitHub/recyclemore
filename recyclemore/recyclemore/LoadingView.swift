@@ -16,18 +16,22 @@ struct LoadingView: View {
             Color.white.opacity(0.8)
                 .edgesIgnoringSafeArea(.all)
 
+            /*
             Image("Loading")
                 .resizable()
                 .frame(width: 40, height: 40)
                 .rotationEffect(Angle.degrees(isAnimating ? 360 : 0))
                 .animation(
-                    Animation.linear(duration: 1.0)
+                    Animation.linear(duration: 5.0)
                         .repeatForever(autoreverses: false),
                     value: isAnimating
                 )
                 .onAppear {
                     isAnimating = true
                 }
+             */
+            LottieView(assetName: "loading_spinner")
+                            .frame(width: 160, height: 160)
         }
     }
 }
