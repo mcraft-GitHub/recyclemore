@@ -40,32 +40,8 @@ struct LoginView: View {
             ZStack {
                 // 背景色
                 Color(UIColor.systemBackground).ignoresSafeArea()
-                // ヘッダー部
-                VStack(spacing: 0) {
-                    // ヘッダー部分(位置固定)
-                    ZStack {
-                        Color.white
-                        
-                        Image("HeaderLogo")
-                            .resizable()
-                            .frame(
-                                width: 177.5,
-                                height: 30)
-                        
-                    }
-                    .frame(height: 60)
-                    .overlay(
-                        Rectangle()
-                            .frame(height: 0.5)
-                            .foregroundColor(.gray),
-                        alignment: .bottom
-                    )
-                    .zIndex(1)
-                    
-                    Spacer()
-                }
-                .background(Color(UIColor.systemBackground))
-                ZStack {
+
+                ZStack() {
                     // メインコンテンツ
                     VStack(spacing: 0) {
                         VStack(spacing: 0) {
@@ -204,7 +180,6 @@ struct LoginView: View {
                         .frame(maxHeight: 370 + topPaddingOffset)
                     }
                     .padding(.horizontal, 20)
-                    //.padding(.vertical, 40)
                     .frame(maxWidth: .infinity)
                     if isShowingModal {
                         switch modalType {
@@ -249,6 +224,32 @@ struct LoginView: View {
                             }
                         }
                     }
+                }
+                
+                // ヘッダー部
+                VStack(spacing: 0) {
+                    // ヘッダー部分(位置固定)
+                    ZStack() {
+                        Color.white
+                        
+                        Image("HeaderLogo")
+                            .resizable()
+                            .frame(
+                                width: 177.5,
+                                height: 30)
+                        
+                    }
+                    .frame(height: 60)
+                    .overlay(
+                        Rectangle()
+                            .frame(height: 0.5)
+                            .foregroundColor(.gray),
+                        alignment: .bottom
+                    )
+                    .zIndex(10)
+                    
+                    Spacer()
+                    
                 }
             }
         }

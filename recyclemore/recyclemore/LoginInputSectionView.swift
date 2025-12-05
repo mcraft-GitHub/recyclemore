@@ -18,40 +18,38 @@ struct LoginInputSectionView: View {
     @FocusState private var focusedField: Field?
     
     var body: some View {
-        ScrollView {
-            VStack(spacing:20) {
-                // メールアドレス入力ブロック
-                InputFieldBlock(label: "メールアドレス", text: $email, errorMessage: emailError, isSecure: false,focusedField: $focusedField, fieldType: .email)
-                
-                // パスワード入力ブロック
-                InputFieldBlock(label: "パスワード", text: $password, errorMessage: passwordError,isSecure: true,focusedField: $focusedField, fieldType: .password)
-                
-                // テキスト+アイコン
-                HStack(spacing : 8) {
-                    Text("パスワードを忘れた方")
-                        .lineSpacing(0)
-                            .frame(height: 20)
-                    Image(systemName: "chevron.right")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 6, height: 10)
-                }
-                .frame(maxWidth: .infinity)
-                .onTapGesture {
-                    if(Server == "Dev")
-                    {
-                        MultiViewURL = BaseURL_Dev + ForgetDir
-                    }
-                    else
-                    {
-                        MultiViewURL = BaseURL_Dis + ForgetDir
-                    }
-                    
-                    currentView = .web
-                }
+        VStack(spacing:20) {
+            // メールアドレス入力ブロック
+            InputFieldBlock(label: "メールアドレス", text: $email, errorMessage: emailError, isSecure: false,focusedField: $focusedField, fieldType: .email)
+            
+            // パスワード入力ブロック
+            InputFieldBlock(label: "パスワード", text: $password, errorMessage: passwordError,isSecure: true,focusedField: $focusedField, fieldType: .password)
+            
+            // テキスト+アイコン
+            HStack(spacing : 8) {
+                Text("パスワードを忘れた方")
+                    .lineSpacing(0)
+                    .frame(height: 20)
+                Image(systemName: "chevron.right")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 6, height: 10)
             }
-            .padding(.horizontal, 20)
+            .frame(maxWidth: .infinity)
+            .onTapGesture {
+                if(Server == "Dev")
+                {
+                    MultiViewURL = BaseURL_Dev + ForgetDir
+                }
+                else
+                {
+                    MultiViewURL = BaseURL_Dis + ForgetDir
+                }
+                
+                currentView = .web
+            }
         }
+        .padding(.horizontal, 20)
     }
 }
 
