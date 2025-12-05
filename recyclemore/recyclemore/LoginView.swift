@@ -40,173 +40,47 @@ struct LoginView: View {
             ZStack {
                 // 背景色
                 Color(UIColor.systemBackground).ignoresSafeArea()
-
-                ZStack() {
-                    // メインコンテンツ
-                    VStack(spacing: 0) {
-                        VStack(spacing: 0) {
-                            // アイコンとテキスト領域
-                            HStack(spacing:12) {
-                                Image("LoginIcon")
-                                    .resizable()
-                                    .frame(width: 30, height: 30)
-                                    .foregroundColor(.blue)
-                                
-                                Text("ログイン")
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .multilineTextAlignment(.center)
-                            .padding(.bottom, 40)
-                            
-                            // フォーム領域
+                GeometryReader { geo in
+                    ZStack() {
+                        // メインコンテンツ
+                        ScrollView{
                             VStack{
-                                LoginInputSectionView(email: $email, password: $password,currentView: $currentView,emailError: emailErrorMessage,passwordError: passwordErrorMessage
-                                )
+                                Spacer()
+                                mainContentView
+                                Spacer()
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding(.top)
-                            .padding(.bottom)
-                            .background(Color(hex: "#F7F8F8"))
-                            .cornerRadius(6)
-                            .shadow(
-                                color: Color.black.opacity(0.2),
-                                radius: 6,
-                                x: 0,
-                                y: 1
-                            )
-                            
-                            // ボタン領域
-                            HStack(spacing:10) {
-                                Button(action: {
-                                    print("戻るボタン")
-                                    // スタート画面に戻る
-                                    if(Server == "Dev")
-                                    {
-                                        MultiViewURL = BaseURL_Dev + StartDir
-                                    }
-                                    else
-                                    {
-                                        MultiViewURL = BaseURL_Dis + StartDir
-                                    }
-                                    currentView = .web
-                                }) {
-                                    Text("戻る")
-                                        .frame(maxWidth: .infinity,minHeight: 20, maxHeight: 40)
-                                        .fontWeight(.bold)
-                                        .background(Color(hex: "#9FA0A0"))
-                                        .foregroundColor(.white)
-                                        .cornerRadius(6)
-                                }
-                                .frame(height: 40)
-                                .shadow(
-                                    color: Color.black.opacity(0.3),
-                                    radius: 6,
-                                    x: 0,
-                                    y: 1
-                                )
-                                
-                                Button(action: {
-                                    Task {
-                                        var email_OK = false
-                                        var pass_OK = false
-                                        topPaddingOffset = 0
-                                        if email != "" {
-                                            if(isValidEmail(email)) {
-                                                emailErrorMessage = nil
-                                                email_OK = true
-                                            }
-                                            else
-                                            {
-                                                emailErrorMessage = "メールアドレスが正しくありません"
-                                                topPaddingOffset += 21
-                                            }
-                                        }
-                                        else
+                            .frame(minHeight: geo.size.height)
+                        }
+                        
+                        
+                        if isShowingModal {
+                            switch modalType {
+                            case .close :
+                                ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
+                            case .retry:
+                                ErrorRetryModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode,onRetry: {
+                                    Task{
+                                        isLoading = true
+                                        // リトライする内容を分岐
+                                        if(lastAPI == "Login")
                                         {
-                                            emailErrorMessage = "メールアドレスが未入力です"
-                                            topPaddingOffset += 21
-                                        }
-                                        
-                                        if password != "" {
-                                            if(isValidPassword(password)) {
-                                                passwordErrorMessage = nil
-                                                pass_OK = true
-                                            }
-                                            else
-                                            {
-                                                passwordErrorMessage = "パスワードが正しくありません"
-                                                topPaddingOffset += 21
-                                            }
-                                        }
-                                        else
-                                        {
-                                            passwordErrorMessage = "パスワードが未入力です"
-                                            topPaddingOffset += 21
-                                        }
-                                        
-                                        // 両方正しく入力されていればログインAPIを実行
-                                        if (email_OK && pass_OK) {
-                                            // ログインAPIを実行
-                                            isLoading = true
                                             await LoginAPI()
-                                            isLoading = false
                                         }
                                         else
                                         {
-                                            return // 未入力があれば進ませない
+                                            await InitialLoginAPI()
                                         }
+                                        isLoading = false
                                     }
-                                })                                {
-                                    Text("ログイン")
-                                        .frame(maxWidth: .infinity,minHeight: 20, maxHeight: 40)
-                                        .fontWeight(.bold)
-                                        .background(Color(hex: "#0099D9"))
-                                        .foregroundColor(.white)
-                                        .cornerRadius(6)
-                                }
-                                .frame(height: 40)
-                                .shadow(
-                                    color: Color.black.opacity(0.3),
-                                    radius: 6,
-                                    x: 0,
-                                    y: 1
-                                )
+                                })
+                            case .back:
+                                ErrorBackModalView(isShowingModal: $isShowingModal,currentView: $currentView,messag: errorMessage,code: errorCode)
+                            default:
+                                EmptyView()
                             }
-                            .padding(.top,30)
-                            .padding(.horizontal,10)
-                        }
-                        .frame(maxHeight: 370 + topPaddingOffset)
-                    }
-                    .padding(.horizontal, 20)
-                    .frame(maxWidth: .infinity)
-                    if isShowingModal {
-                        switch modalType {
-                        case .close :
-                            ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
-                        case .retry:
-                            ErrorRetryModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode,onRetry: {
-                                Task{
-                                    isLoading = true
-                                    // リトライする内容を分岐
-                                    if(lastAPI == "Login")
-                                    {
-                                        await LoginAPI()
-                                    }
-                                    else
-                                    {
-                                        await InitialLoginAPI()
-                                    }
-                                    isLoading = false
-                                }
-                            })
-                        case .back:
-                            ErrorBackModalView(isShowingModal: $isShowingModal,currentView: $currentView,messag: errorMessage,code: errorCode)
-                        default:
-                            EmptyView()
                         }
                     }
+                    headerView
                 }
                 .onAppear {
                     // 一回だけね
@@ -226,33 +100,180 @@ struct LoginView: View {
                     }
                 }
                 
-                // ヘッダー部
-                VStack(spacing: 0) {
-                    // ヘッダー部分(位置固定)
-                    ZStack() {
-                        Color.white
-                        
-                        Image("HeaderLogo")
-                            .resizable()
-                            .frame(
-                                width: 177.5,
-                                height: 30)
-                        
-                    }
-                    .frame(height: 60)
-                    .overlay(
-                        Rectangle()
-                            .frame(height: 0.5)
-                            .foregroundColor(.gray),
-                        alignment: .bottom
-                    )
-                    .zIndex(10)
-                    
-                    Spacer()
-                    
-                }
+                //headerView
+                
             }
         }
+    }
+    
+    // ごちゃったので、要素を外に書き出した
+    // ヘッダー
+    var headerView: some View {
+        VStack(spacing: 0) {
+            // ヘッダー部分(位置固定)
+            ZStack() {
+                Color.white
+                
+                Image("HeaderLogo")
+                    .resizable()
+                    .frame(
+                        width: 177.5,
+                        height: 30)
+                
+            }
+            .frame(height: 60)
+            .overlay(
+                Rectangle()
+                    .frame(height: 0.5)
+                    .foregroundColor(.gray),
+                alignment: .bottom
+            )
+            //.zIndex(10)
+            
+            //Spacer()
+            
+        }
+    }
+    
+    var mainContentView: some View {
+        VStack(spacing: 0) {
+            VStack(spacing: 0) {
+                // アイコンとテキスト領域
+                HStack(spacing:12) {
+                    Image("LoginIcon")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(.blue)
+                    
+                    Text("ログイン")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                }
+                .frame(maxWidth: .infinity)
+                .multilineTextAlignment(.center)
+                .padding(.bottom, 40)
+                
+                // フォーム領域
+                VStack{
+                    LoginInputSectionView(email: $email, password: $password,currentView: $currentView,emailError: emailErrorMessage,passwordError: passwordErrorMessage
+                    )
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top)
+                .padding(.bottom)
+                .background(Color(hex: "#F7F8F8"))
+                .cornerRadius(6)
+                .shadow(
+                    color: Color.black.opacity(0.2),
+                    radius: 6,
+                    x: 0,
+                    y: 1
+                )
+                
+                // ボタン領域
+                HStack(spacing:10) {
+                    Button(action: {
+                        print("戻るボタン")
+                        // スタート画面に戻る
+                        if(Server == "Dev")
+                        {
+                            MultiViewURL = BaseURL_Dev + StartDir
+                        }
+                        else
+                        {
+                            MultiViewURL = BaseURL_Dis + StartDir
+                        }
+                        currentView = .web
+                    }) {
+                        Text("戻る")
+                            .frame(maxWidth: .infinity,minHeight: 20, maxHeight: 40)
+                            .fontWeight(.bold)
+                            .background(Color(hex: "#9FA0A0"))
+                            .foregroundColor(.white)
+                            .cornerRadius(6)
+                    }
+                    .frame(height: 40)
+                    .shadow(
+                        color: Color.black.opacity(0.3),
+                        radius: 6,
+                        x: 0,
+                        y: 1
+                    )
+                    
+                    Button(action: {
+                        Task {
+                            var email_OK = false
+                            var pass_OK = false
+                            topPaddingOffset = 0
+                            if email != "" {
+                                if(isValidEmail(email)) {
+                                    emailErrorMessage = nil
+                                    email_OK = true
+                                }
+                                else
+                                {
+                                    emailErrorMessage = "メールアドレスが正しくありません"
+                                    topPaddingOffset += 21
+                                }
+                            }
+                            else
+                            {
+                                emailErrorMessage = "メールアドレスが未入力です"
+                                topPaddingOffset += 21
+                            }
+                            
+                            if password != "" {
+                                if(isValidPassword(password)) {
+                                    passwordErrorMessage = nil
+                                    pass_OK = true
+                                }
+                                else
+                                {
+                                    passwordErrorMessage = "パスワードが正しくありません"
+                                    topPaddingOffset += 21
+                                }
+                            }
+                            else
+                            {
+                                passwordErrorMessage = "パスワードが未入力です"
+                                topPaddingOffset += 21
+                            }
+                            
+                            // 両方正しく入力されていればログインAPIを実行
+                            if (email_OK && pass_OK) {
+                                // ログインAPIを実行
+                                isLoading = true
+                                await LoginAPI()
+                                isLoading = false
+                            }
+                            else
+                            {
+                                return // 未入力があれば進ませない
+                            }
+                        }
+                    })                                {
+                        Text("ログイン")
+                            .frame(maxWidth: .infinity,minHeight: 20, maxHeight: 40)
+                            .fontWeight(.bold)
+                            .background(Color(hex: "#0099D9"))
+                            .foregroundColor(.white)
+                            .cornerRadius(6)
+                    }
+                    .frame(height: 40)
+                    .shadow(
+                        color: Color.black.opacity(0.3),
+                        radius: 6,
+                        x: 0,
+                        y: 1
+                    )
+                }
+                .padding(.top,30)
+                .padding(.horizontal,10)
+            }
+            .frame(maxHeight: 370 + topPaddingOffset)
+        }
+        .padding(.horizontal, 20)
+        .frame(maxWidth: .infinity)
     }
     
     func LoginAPI() async {
