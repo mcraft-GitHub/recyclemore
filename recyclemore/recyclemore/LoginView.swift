@@ -56,10 +56,11 @@ struct LoginView: View {
                     .frame(height: 60)
                     .overlay(
                         Rectangle()
-                            .frame(height: 1)
+                            .frame(height: 0.5)
                             .foregroundColor(.gray),
                         alignment: .bottom
                     )
+                    .zIndex(1)
                     
                     Spacer()
                 }
