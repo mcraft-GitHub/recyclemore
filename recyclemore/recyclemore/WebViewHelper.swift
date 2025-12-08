@@ -67,8 +67,6 @@ struct HybridWebView: UIViewRepresentable {
         let preferences = WKWebpagePreferences()
         
         if #available(iOS 15.0, *) {
-            print("初期 preferredContentMode =",
-                      config.defaultWebpagePreferences.preferredContentMode.rawValue)
             preferences.preferredContentMode = .mobile
         }
         config.defaultWebpagePreferences = preferences

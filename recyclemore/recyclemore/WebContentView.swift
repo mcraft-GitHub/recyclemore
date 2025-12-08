@@ -78,7 +78,6 @@ struct WebContentView: View {
             
         case "logout":
             print("ログアウト実行")
-            // TODO:遷移図的には多分ログアウトAPIを実行する必要がある気がする
             // 参照用ユーザー情報を削除
             SharedUserData.userData = nil
             // 端末に保存しているログイン情報を削除
@@ -95,7 +94,7 @@ struct WebContentView: View {
                 if let error = error {
                     print("JS 実行エラー: \(error)")
                 } else {
-                    print("setDeviceInfo 呼び出し成功")
+                    print("sendBrightness 呼び出し成功")
                 }
             }
             
@@ -103,6 +102,9 @@ struct WebContentView: View {
             print("輝度")
             let brightness = params?["brightness"] as? Float ?? 1.0
             
+            print("変更先")
+            print(brightness)
+
             if(brightness == -1.0){
                 print("輝度復元")
                 UIScreen.main.brightness = original
@@ -121,23 +123,6 @@ struct WebContentView: View {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
             
-            /*
-             case "first":
-             print("JS")
-             // ここでページ内のJSを呼び出す
-             let token = "abc123"
-             let email = "test@example.com"
-             
-             // 関数名やら引数やらを指定
-             let jsCode = "window.setDeviceInfo('\(token)', '\(email)', '\(APP_VERSION)')"
-             webView?.evaluateJavaScript(jsCode) { result, error in
-             if let error = error {
-             print("JS 実行エラー: \(error)")
-             } else {
-             print("setDeviceInfo 呼び出し成功")
-             }
-             }
-             */
         case "network_error":
             print("通信エラーですよ")
             errorCode = ""
@@ -185,6 +170,8 @@ struct WebContentView: View {
             }
         default:
             print("なんかされた")
+            print("要求")
+            print(action)
         }
     }
 }

@@ -16,6 +16,7 @@ struct LoadingView: View {
             Color.white.opacity(0.8)
                 .edgesIgnoringSafeArea(.all)
 
+            //figma通りならこっち
             /*
             Image("Loading")
                 .resizable()
@@ -30,6 +31,8 @@ struct LoadingView: View {
                     isAnimating = true
                 }
              */
+            
+            //Lottieライブラリを使う場合はこっち
             LottieView(assetName: "loading_spinner")
                             .frame(width: 160, height: 160)
         }

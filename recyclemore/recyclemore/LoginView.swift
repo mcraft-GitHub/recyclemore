@@ -99,9 +99,6 @@ struct LoginView: View {
                         }
                     }
                 }
-                
-                //headerView
-                
             }
         }
     }
@@ -128,10 +125,6 @@ struct LoginView: View {
                     .foregroundColor(.gray),
                 alignment: .bottom
             )
-            //.zIndex(10)
-            
-            //Spacer()
-            
         }
     }
     
@@ -373,12 +366,6 @@ struct LoginView: View {
                         errorCode = ""
                         modalType = .close
                         isShowingModal = true
-                        
-                        /*
-                         print("仮成功模擬")
-                         MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest2.php"
-                         currentView = .web
-                         */
                     }
                     else if(StatusCode == 401){
                         errorMessage = ERROR_MES_LOGIN_HEAVY
@@ -541,12 +528,6 @@ struct LoginView: View {
                         errorCode = ""
                         modalType = .close
                         isShowingModal = true
-                        
-                        /*
-                         print("仮成功模擬")
-                         MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest2.php"
-                         currentView = .web
-                         */
                     }
                     else if(StatusCode == 401){
                         errorMessage = ERROR_MES_LOGIN_HEAVY
