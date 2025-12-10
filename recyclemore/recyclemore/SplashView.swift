@@ -14,15 +14,25 @@ struct SplashView: View {
     @Binding var currentView: AppViewMode
     @State private var VersionCheckState = 0
     @State private var VersionCheckComp = false
+    @State private var AutoLoginComp = false
     @State private var StatusCode = 200
     @State private var isError = false
     @State private var errorMessage = ""
     @State private var errorCode = ""
+    @State private var isSimple = false
     @State private var email:String?
     @State private var token:String?
     
     @State private var isShowingModal = false
     @State private var modalType:ModalType = .update
+    
+    @State private var NeedUpdate = false
+    @State private var APIStep = 0
+    
+    @State private var StartTime = Date()
+    
+    @State private var count = 2
+    @State private var count2 = 2
     
     var body: some View {
         GeometryReader { geometry in
@@ -40,6 +50,13 @@ struct SplashView: View {
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 if isShowingModal {
                     switch modalType {
+                    case .retry:
+                        ErrorRetryModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode,isSimple: isSimple, onRetry: {
+                            Task{
+                                // フローを進行状況に応じて再開
+                                await SplashFlow()
+                            }
+                        })
                     case .close :
                         ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
                     case .update :
@@ -55,98 +72,149 @@ struct SplashView: View {
             }
             .onAppear {
                 Task {
-                    var NeedUpdate = false
-                    
-                    // 3秒後にViewを切り替え
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(SPLASH_WINDOW_TIME)) {
-                        print("3秒")
-                        withAnimation(.none) {
-                            
-                            if(IsByURL)
-                            {
-                                return
-                            }
-                            //アプデが必要なら画面遷移どころでは無い
-                            if(!NeedUpdate && !isError){
-                                currentView = .web
-                            }
-                        }
-                    }
-                    
-                    // バージョンチェックAPIを実行
-                    await GetAppVersionAPI()
-                    
-                    // 正常に実行できた場合
-                    if(VersionCheckComp) {
-                        print("比較結果")
-                        print(VersionCheckState)
-                        if VersionCheckState == -1 {
-                            NeedUpdate = true
-                            isShowingModal = true
-                            modalType = .forceUpdate
-                            return
-                        }
-                        else if VersionCheckState == 1 {
-                            NeedUpdate = true
-                            isShowingModal = true
-                            modalType = .update
-                            return
-                        }
-                    }
-                    else
-                    {
-                        // 失敗したらモーダル表示して中断
-                        isShowingModal = true
-                        return
-                    }
-                    
-                    // トークンとメールアドレスの存在を確認
-                    token = KeychainHelper.shared.read(key: "token")
-                    email = KeychainHelper.shared.read(key: "email")
-                    
-                    // トークンかメアドが保存されていなければ遷移先をスタート画面にする
-                    if(token == nil || email == nil)
-                    {
-                        print("スタート画面へ")
-                        if(Server == "Dev")
-                        {
-                            MultiViewURL = BaseURL_Dev + StartDir
-                        }
-                        else
-                        {
-                            MultiViewURL = BaseURL_Dis + StartDir
-                        }
-                        print("UDID")
-                        print(Appvisor.appvisorUDID())
-                    }
-                    else
-                    {
-                        print("ホーム画面へ")
-                        await AutoLoginAPI()
-                    }
+                    StartTime = Date()
+                    await SplashFlow()
                 }
             }
         }
     }
     
-    func GetAppVersionAPI() async {
+    func SplashFlow() async{
+        
+        if(IsByURL)
+        {
+            // このパターンは別の導線で対処
+            return
+        }
+
+        print("step1")
+        if(APIStep < 1)
+        {
+            // バージョンチェックAPIを実行
+            VersionCheckComp = await GetAppVersionAPI()
+            
+            // 正常に実行できた場合
+            if(VersionCheckComp) {
+                APIStep = 1 // フローの段階を更新
+                print("比較結果")
+                print(VersionCheckState)
+                if VersionCheckState == -1 {
+                    NeedUpdate = true
+                    isShowingModal = true
+                    modalType = .forceUpdate
+                    return
+                }
+                else if VersionCheckState == 1 {
+                    NeedUpdate = true
+                    isShowingModal = true
+                    //TODO:必要なら任意更新のモーダルにする
+                    modalType = .forceUpdate
+                    return
+                }
+            }
+            else
+            {
+                // 失敗したらモーダル表示して中断
+                isShowingModal = true
+                return
+            }
+        }
+        
+        print("step2")
+        if(APIStep < 2) {
+            // トークンとメールアドレスの存在を確認
+            token = KeychainHelper.shared.read(key: "token")
+            email = KeychainHelper.shared.read(key: "email")
+            
+            // トークンかメアドが保存されていなければ遷移先をスタート画面にする
+            if(token == nil || email == nil)
+            {
+                print("スタート画面へ")
+                if(Server == "Dev")
+                {
+                    MultiViewURL = BaseURL_Dev + StartDir
+                }
+                else
+                {
+                    MultiViewURL = BaseURL_Dis + StartDir
+                }
+                print("UDID")
+                print(Appvisor.appvisorUDID())
+            }
+            else
+            {
+                print("ホーム画面へ")
+                
+                if(count > 0)
+                {
+                    token = "xxxxxxxxxxxxxxxx"
+                    count -= 1
+                }
+                
+                AutoLoginComp = await AutoLoginAPI()
+                
+                if(AutoLoginComp)
+                {
+                    // ログインに成功したのでマルチ画面で表示するページを変更する
+                    if(Server == "Dev")
+                    {
+                        MultiViewURL = BaseURL_Dev + HomeDir
+                    }
+                    else
+                    {
+                        MultiViewURL = BaseURL_Dis + HomeDir
+                    }
+                }
+                else
+                {
+                    // 失敗したらモーダル表示して中断
+                    isShowingModal = true
+                    return
+                }
+            }
+            APIStep = 2 // フローの段階を更新
+        }
+        
+        print("step3")
+        
+        let elapsed = Date().timeIntervalSince(StartTime)
+        let required = Double(SPLASH_WINDOW_TIME)
+
+        if elapsed < required {
+            let wait = required - elapsed
+            print("待ち時間")
+            print(wait)
+            try? await Task.sleep(nanoseconds: UInt64(wait * 1_000_000_000))
+        }
+        print("表示から３秒以上経過")
+        
+        withAnimation(.none) {
+            currentView = .web
+        }
+    }
+    
+    func GetAppVersionAPI() async -> Bool{
         // バージョン取得API
         guard let url = URL(string: "https://api-recyclemore-cafzh7ewbngsdreu.japaneast-01.azurewebsites.net/v1/App/get-app-version")
         else
         {
-            return
+            return false
+        }
+        
+        var os = "iOS"
+        
+        if(count2 > 0)
+        {
+            os = "iOS2"
+            count2 -= 1
         }
         
         // 送信データ
         let params = [
-            "os":"iOS",
+            "os":os,
         ] as [String:Any]
         
         do {
-            // テスト用の鉄砲玉
-            /*
-            throw NSError(domain: "Test", code: 1, userInfo: [NSLocalizedDescriptionKey: "雑エラー"])
-             */
             //リクエストデータの作成
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
@@ -180,18 +248,39 @@ struct SplashView: View {
                         
                         // ここで比較した結果をもらって反映
                         VersionCheckState = compareVersion(decoded.item.now_version,decoded.item.need_version)
-                        VersionCheckComp = true
                     }
+                    return true
                 }
                 else
                 {
                     await MainActor.run {
                         print("デコード失敗")
+                        
+                        let jsonString = String(data: data, encoding: .utf8)
+                        var code = ""
+                        
+                        if let jsonData = jsonString!.data(using: .utf8) {
+                            do {
+                                // JSON オブジェクトに変換
+                                if let jsonObject = try JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
+                                    
+                                    // result_code を取り出す
+                                    if let resultCode = jsonObject["result_code"] as? String {
+                                        code = String(resultCode.suffix(5))
+                                    }
+                                }
+                            } catch {
+                                print("JSONパースエラー: \(error)")
+                            }
+                        }
+                        
                         isError = true
-                        errorMessage = ERROR_MES_EXC
-                        errorCode = "[エラーコード : 999]"
-                        modalType = .close
+                        errorMessage = ERROR_MES_SPLASH
+                        errorCode = code
+                        isSimple = false
+                        modalType = .retry
                     }
+                    return false
                 }
             }
             else
@@ -199,27 +288,44 @@ struct SplashView: View {
                 // エラー発生を記憶
                 isError = true
                 // 結果に問題があったのでステータスに応じたモーダルを表示
-                if(StatusCode == 400 || StatusCode == 401) {
-                    errorMessage = ERROR_MES_DEF
-                    errorCode = ""
-                    modalType = .close
+                if(StatusCode == 400) {
+                    print("400")
+                    errorMessage = ERROR_MES_SPLASH
+                    errorCode = "-400"
+                    isSimple = false
+                    modalType = .retry
+                }
+                else if(StatusCode == 401)
+                {
+                    print("401")
+                    errorMessage = ERROR_MES_SPLASH
+                    errorCode = "-401"
+                    isSimple = false
+                    modalType = .retry
                 }
                 else if(StatusCode == 429) {
-                    errorMessage = ERROR_MES_429
-                    errorCode = ""
-                    modalType = .close
+                    print("429")
+                    errorMessage = ERROR_MES_SPLASH
+                    errorCode = "-429"
+                    isSimple = false
+                    modalType = .retry
                 }
                 else if(StatusCode == 500) {
-                    errorMessage = ERROR_MES_500
-                    errorCode = ""
-                    modalType = .close
+                    print("500")
+                    errorMessage = ERROR_MES_SPLASH
+                    errorCode = "-500"
+                    isSimple = false
+                    modalType = .retry
                 }
                 else
                 {
-                    errorMessage = ERROR_MES_EXC
-                    errorCode = ""
-                    modalType = .close
+                    print("999")
+                    errorMessage = ERROR_MES_SPLASH
+                    errorCode = "-999"
+                    isSimple = false
+                    modalType = .retry
                 }
+                return false
             }
         }
         catch {
@@ -229,25 +335,29 @@ struct SplashView: View {
                     print("通信失敗")
                     isError = true
                     errorMessage = ERROR_MES_NET
-                    errorCode = "[エラーコード : 000]"
-                    modalType = .close
+                    errorCode = ""
+                    isSimple = true
+                    modalType = .retry
                 } else {
                     // 通信以外の実行エラー（予期しない例外）として処理
+                    print("想定外のエラー")
                     isError = true
-                    errorMessage = ERROR_MES_EXC
-                    errorCode = "[エラーコード : 999]"
-                    modalType = .close
+                    errorMessage = ERROR_MES_SPLASH
+                    errorCode = "-999"
+                    isSimple = false
+                    modalType = .retry
                 }
             }
+            return false
         }
     }
     
-    func AutoLoginAPI() async {
+    func AutoLoginAPI() async ->Bool {
         // ログインAPI
         guard let url = URL(string: "https://api-recyclemore-cafzh7ewbngsdreu.japaneast-01.azurewebsites.net/v1/Auth/auto-login")
         else
         {
-            return
+            return false
         }
         
         // 送信データ
@@ -290,82 +400,103 @@ struct SplashView: View {
                     await MainActor.run{
                         // 結果からユーザー情報を作成
                         SharedUserData.userData = UserData(is_tel_verified: decoded.item.is_tel_verified, is_user_registered: decoded.item.is_user_registered, is_age_verified: decoded.item.is_age_verified)
-                        
-                        // ログインに成功したのでマルチ画面で表示するページを変更する
-                        if(Server == "Dev")
-                        {
-                            MultiViewURL = BaseURL_Dev + HomeDir
-                        }
-                        else
-                        {
-                            MultiViewURL = BaseURL_Dis + HomeDir
-                        }
                     }
+                    return true
                 }
                 else
                 {
-                    // 失敗する情報を削除
-                    KeychainHelper.shared.delete(key: "token")
-                    KeychainHelper.shared.delete(key: "email")
+                    // TODO:失敗する情報を削除
+                    //KeychainHelper.shared.delete(key: "token")
+                    //KeychainHelper.shared.delete(key: "email")
                     await MainActor.run {
                         print("デコード失敗")
+                        
+                        let jsonString = String(data: data, encoding: .utf8)
+                        var code = ""
+                        
+                        if let jsonData = jsonString!.data(using: .utf8) {
+                            do {
+                                // JSON オブジェクトに変換
+                                if let jsonObject = try JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
+                                    
+                                    // result_code を取り出す
+                                    if let resultCode = jsonObject["result_code"] as? String {
+                                        code = String(resultCode.suffix(5))
+                                    }
+                                }
+                            } catch {
+                                print("JSONパースエラー: \(error)")
+                            }
+                        }
+                        
                         isError = true
-                        errorMessage = ERROR_MES_EXC
-                        errorCode = "[エラーコード : 999]"
-                        modalType = .close
+                        errorMessage = ERROR_MES_SPLASH
+                        errorCode = code
+                        isSimple = false
+                        modalType = .retry
                     }
+                    return false
                 }
             }
             else
             {
                 await MainActor.run {
                     
-                    // 失敗する情報を削除
-                    KeychainHelper.shared.delete(key: "token")
-                    KeychainHelper.shared.delete(key: "email")
+                    // TODO:失敗する情報を削除
+                    //KeychainHelper.shared.delete(key: "token")
+                    //KeychainHelper.shared.delete(key: "email")
                     
                     // 結果に問題があったのでステータスに応じたモーダルを表示
                     if(StatusCode == 400) {
                         // ログイン失敗
-                        print("自動ログイン失敗")
-                        // TODO:遷移先URLをスタート画面にする
+                        print("400")
+                        isError = true
+                        errorMessage = ERROR_MES_SPLASH
+                        errorCode = "-400"
+                        isSimple = false
+                        modalType = .retry
                     }
                     else if(StatusCode == 401) {
                         // エラー発生を記憶
                         isError = true
-                        errorMessage = ERROR_MES_DEF
-                        errorCode = ""
-                        modalType = .close
+                        errorMessage = ERROR_MES_SPLASH
+                        errorCode = "-401"
+                        isSimple = false
+                        modalType = .retry
                     }
                     else if(StatusCode == 429) {
                         // エラー発生を記憶
                         isError = true
-                        errorMessage = ERROR_MES_429
-                        errorCode = ""
-                        modalType = .close
+                        errorMessage = ERROR_MES_SPLASH
+                        errorCode = "-429"
+                        isSimple = false
+                        modalType = .retry
                     }
                     else if(StatusCode == 500) {
                         // エラー発生を記憶
                         isError = true
-                        errorMessage = ERROR_MES_500
-                        errorCode = ""
-                        modalType = .close
+                        errorMessage = ERROR_MES_SPLASH
+                        errorCode = "-500"
+                        isSimple = false
+                        modalType = .retry
                     }
                     else
                     {
                         // エラー発生を記憶
                         isError = true
-                        errorMessage = ERROR_MES_EXC
-                        errorCode = ""
-                        modalType = .close
+                        errorMessage = ERROR_MES_SPLASH
+                        errorCode = "-999"
+                        isSimple = false
+                        modalType = .retry
                     }
                 }
+                return false
             }
         }
         catch {
-            // 失敗する情報を削除
-            KeychainHelper.shared.delete(key: "token")
-            KeychainHelper.shared.delete(key: "email")
+            // TODO:失敗する情報を削除
+            //KeychainHelper.shared.delete(key: "token")
+            //KeychainHelper.shared.delete(key: "email")
             
             await MainActor.run {
                 if error is URLError {
@@ -373,16 +504,18 @@ struct SplashView: View {
                     print("通信失敗")
                     isError = true
                     errorMessage = ERROR_MES_NET
-                    errorCode = "[エラーコード : 000]"
-                    modalType = .close
+                    errorCode = ""
+                    isSimple = true
+                    modalType = .retry
                 } else {
                     // 通信以外の実行エラー（予期しない例外）として処理
                     isError = true
-                    errorMessage = ERROR_MES_EXC
-                    errorCode = "[エラーコード : 999]"
-                    modalType = .close
+                    errorMessage = ERROR_MES_SPLASH
+                    errorCode = "-999"
+                    modalType = .retry
                 }
             }
+            return false
         }
     }
 }

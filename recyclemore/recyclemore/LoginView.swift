@@ -18,6 +18,7 @@ struct LoginView: View {
     @State private var emailErrorMessage: String? = nil
     @State private var passwordErrorMessage: String? = nil
     @State private var StatusCode = 200
+    @State private var isSimple = false
     
     @State private var isLoading = false
     @State private var isShowingModal = false
@@ -25,8 +26,6 @@ struct LoginView: View {
     @State private var errorCode = ""
     @State private var modalType:ModalType = .close
     @State private var oneShot = true
-    
-    @State private var lastAPI = "Login"
     
     @State private var topPadding: CGFloat = 120 // メインコンテンツパディング高
     @State private var topPaddingOffset: CGFloat = 0 // パディング調整値
@@ -51,36 +50,36 @@ struct LoginView: View {
                             }
                             .frame(minHeight: geo.size.height)
                         }
-                        
-                        
-                        if isShowingModal {
-                            switch modalType {
-                            case .close :
-                                ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
-                            case .retry:
-                                ErrorRetryModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode,onRetry: {
-                                    Task{
-                                        isLoading = true
-                                        // リトライする内容を分岐
-                                        if(lastAPI == "Login")
-                                        {
-                                            await LoginAPI()
-                                        }
-                                        else
-                                        {
-                                            await InitialLoginAPI()
-                                        }
-                                        isLoading = false
-                                    }
-                                })
-                            case .back:
-                                ErrorBackModalView(isShowingModal: $isShowingModal,currentView: $currentView,messag: errorMessage,code: errorCode)
-                            default:
-                                EmptyView()
-                            }
-                        }
                     }
                     headerView
+                    
+                    if isShowingModal {
+                        switch modalType {
+                        case .close :
+                            ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode,isSimple: isSimple)
+                        /*case .retry:
+                            // この画面で使うことは無い
+                            ErrorRetryModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode,onRetry: {
+                                Task{
+                                    isLoading = true
+                                    // リトライする内容を分岐
+                                    if(lastAPI == "Login")
+                                    {
+                                        await LoginAPI()
+                                    }
+                                    else
+                                    {
+                                        await InitialLoginAPI()
+                                    }
+                                    isLoading = false
+                                }
+                            })*/
+                        case .back:
+                            ErrorBackModalView(isShowingModal: $isShowingModal,currentView: $currentView,messag: errorMessage,code: errorCode,isSimple: isSimple)
+                        default:
+                            EmptyView()
+                        }
+                    }
                 }
                 .onAppear {
                     // 一回だけね
@@ -312,7 +311,7 @@ struct LoginView: View {
                 StatusCode = httpResponse.statusCode
                 print("ステータスコード", StatusCode)
             }
-            
+
             //レスポンスの表示
             if let jsonString = String(data: data, encoding: .utf8){
                 await MainActor.run {
@@ -349,9 +348,30 @@ struct LoginView: View {
                 {
                     await MainActor.run {
                         print("デコード失敗")
-                        errorMessage = ERROR_MES_LOGIN_HEAVY
-                        errorCode = "[エラーコード : 999]"
-                        modalType = .back
+                        
+                        let jsonString = String(data: data, encoding: .utf8)
+                        var code = ""
+                        
+                        if let jsonData = jsonString!.data(using: .utf8) {
+                            do {
+                                // JSON オブジェクトに変換
+                                if let jsonObject = try JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
+                                    
+                                    // result_code を取り出す
+                                    if let resultCode = jsonObject["result_code"] as? String {
+                                        code = String(resultCode.suffix(5))
+                                    }
+                                }
+                            } catch {
+                                print("JSONパースエラー: \(error)")
+                            }
+                        }
+                        
+                        // 表示はされないが一応エラーコードは抽出しておく
+                        errorMessage = ERROR_MES_LOGIN
+                        errorCode = code
+                        isSimple = true
+                        modalType = .close
                         isShowingModal = true
                     }
                 }
@@ -361,38 +381,44 @@ struct LoginView: View {
                 await MainActor.run {
                     // 結果に問題があったのでステータスに応じたモーダルを表示
                     if(StatusCode == 400) {
-                        print("正しくログイン失敗")
-                        errorMessage = ERROR_MES_LOGIN
-                        errorCode = ""
+                        print("400")
+                        errorMessage = ERROR_MES_LOGIN_HEAVY
+                        errorCode = "-400"
                         modalType = .close
+                        isSimple = false
                         isShowingModal = true
                     }
                     else if(StatusCode == 401){
+                        print("401")
                         errorMessage = ERROR_MES_LOGIN_HEAVY
-                        errorCode = ""
-                        modalType = .back
+                        errorCode = "-401"
+                        modalType = .close
+                        isSimple = false
                         isShowingModal = true
                         
                     }
                     else if(StatusCode == 429) {
-                        errorMessage = ERROR_MES_429
-                        errorCode = ""
-                        lastAPI = "Login"
-                        modalType = .retry
+                        print("429")
+                        errorMessage = ERROR_MES_LOGIN_HEAVY
+                        errorCode = "-429"
+                        modalType = .close
+                        isSimple = false
                         isShowingModal = true
                     }
                     else if(StatusCode == 500) {
-                        errorMessage = ERROR_MES_500
-                        errorCode = ""
-                        lastAPI = "Login"
-                        modalType = .retry
+                        print("500")
+                        errorMessage = ERROR_MES_LOGIN_HEAVY
+                        errorCode = "-500"
+                        modalType = .close
+                        isSimple = false
                         isShowingModal = true
                     }
                     else
                     {
-                        errorMessage = ERROR_MES_LOGIN_HEAVY
-                        errorCode = ""
-                        modalType = .back
+                        errorMessage = ERROR_MES_EXC
+                        errorCode = "-999"
+                        modalType = .close
+                        isSimple = false
                         isShowingModal = true
                     }
                 }
@@ -404,15 +430,16 @@ struct LoginView: View {
                     // 通信失敗として処理
                     print("通信失敗")
                     errorMessage = ERROR_MES_NET
-                    errorCode = "[エラーコード : 000]"
-                    lastAPI = "Login"
-                    modalType = .retry
+                    errorCode = ""
+                    modalType = .close
                     isShowingModal = true
+                    isSimple = true
                 } else {
                     // 通信以外の実行エラー（予期しない例外）として処理
-                    errorMessage = ERROR_MES_LOGIN_HEAVY
-                    errorCode = "[エラーコード : 999]"
-                    modalType = .back
+                    errorMessage = ERROR_MES_EXC
+                    errorCode = "-999"
+                    modalType = .close
+                    isSimple = false
                     isShowingModal = true
                 }
             }
@@ -456,14 +483,12 @@ struct LoginView: View {
             
             //通信を実行
             let (data, response) = try await URLSession.shared.data(for: request)
-            
+                        
             //ステータスコードの確認
-            guard let httpResponse = response as? HTTPURLResponse else {
-                print("HTTPレスポンスじゃないので中断")
-                return
+            if let httpResponse = response as? HTTPURLResponse {
+                StatusCode = httpResponse.statusCode
+                print("ステータスコード", StatusCode)
             }
-            
-            print("ステータスコード", httpResponse.statusCode)
             
             //レスポンスの表示
             if let jsonString = String(data: data, encoding: .utf8){
@@ -473,7 +498,7 @@ struct LoginView: View {
             }
             
             // ログインに成功していれば
-            if httpResponse.statusCode == 200
+            if StatusCode == 200
             {
                 if let decoded = try? JSONDecoder().decode(InitialLoginResponse.self, from: data) {
                     await MainActor.run{
@@ -503,13 +528,32 @@ struct LoginView: View {
                     await MainActor.run {
                         print("デコード失敗")
                         
+                        let jsonString = String(data: data, encoding: .utf8)
+                        var code = ""
+                        
+                        if let jsonData = jsonString!.data(using: .utf8) {
+                            do {
+                                // JSON オブジェクトに変換
+                                if let jsonObject = try JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
+                                    
+                                    // result_code を取り出す
+                                    if let resultCode = jsonObject["result_code"] as? String {
+                                        code = String(resultCode.suffix(5))
+                                    }
+                                }
+                            } catch {
+                                print("JSONパースエラー: \(error)")
+                            }
+                        }
+                        
                         // 使い終わった初回用データは消してしまう
                         initial_email = ""
                         initial_token = ""
                         
-                        errorMessage = ERROR_MES_LOGIN_HEAVY
-                        errorCode = "[エラーコード : 999]"
+                        errorMessage = ERROR_MES_FIRST_LOGIN
+                        errorCode = code
                         modalType = .back
+                        isSimple = false
                         isShowingModal = true
                     }
                 }
@@ -523,38 +567,44 @@ struct LoginView: View {
                 await MainActor.run {
                     // 結果に問題があったのでステータスに応じたモーダルを表示
                     if(StatusCode == 400) {
-                        print("正しくログイン失敗")
-                        errorMessage = ERROR_MES_LOGIN
-                        errorCode = ""
-                        modalType = .close
+                        print("400")
+                        errorMessage = ERROR_MES_FIRST_LOGIN
+                        errorCode = "-400"
+                        modalType = .back
+                        isSimple = false
                         isShowingModal = true
                     }
                     else if(StatusCode == 401){
-                        errorMessage = ERROR_MES_LOGIN_HEAVY
-                        errorCode = ""
+                        print("401")
+                        errorMessage = ERROR_MES_FIRST_LOGIN
+                        errorCode = "-401"
                         modalType = .back
+                        isSimple = false
                         isShowingModal = true
                         
                     }
                     else if(StatusCode == 429) {
-                        errorMessage = ERROR_MES_429
-                        errorCode = ""
-                        lastAPI = "InitialLogin"
-                        modalType = .retry
+                        print("429")
+                        errorMessage = ERROR_MES_FIRST_LOGIN
+                        errorCode = "-429"
+                        modalType = .back
+                        isSimple = false
                         isShowingModal = true
                     }
                     else if(StatusCode == 500) {
-                        errorMessage = ERROR_MES_500
-                        errorCode = ""
-                        lastAPI = "InitialLogin"
-                        modalType = .retry
+                        print("500")
+                        errorMessage = ERROR_MES_FIRST_LOGIN
+                        errorCode = "-500"
+                        modalType = .back
+                        isSimple = false
                         isShowingModal = true
                     }
                     else
                     {
-                        errorMessage = ERROR_MES_LOGIN_HEAVY
-                        errorCode = ""
+                        errorMessage = ERROR_MES_FIRST_LOGIN
+                        errorCode = "-999"
                         modalType = .back
+                        isSimple = false
                         isShowingModal = true
                     }
                 }
@@ -570,15 +620,16 @@ struct LoginView: View {
                     // 通信失敗として処理
                     print("通信失敗")
                     errorMessage = ERROR_MES_NET
-                    errorCode = "[エラーコード : 000]"
-                    lastAPI = "InitialLogin"
-                    modalType = .retry
+                    errorCode = ""
+                    modalType = .back
+                    isSimple = true
                     isShowingModal = true
                 } else {
                     // 通信以外の実行エラー（予期しない例外）として処理
-                    errorMessage = ERROR_MES_LOGIN_HEAVY
-                    errorCode = "[エラーコード : 999]"
+                    errorMessage = ERROR_MES_FIRST_LOGIN
+                    errorCode = "-999"
                     modalType = .back
+                    isSimple = false
                     isShowingModal = true
                 }
             }
