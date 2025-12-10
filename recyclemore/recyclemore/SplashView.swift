@@ -93,7 +93,7 @@ struct SplashView: View {
             
             // 正常に実行できた場合
             if(VersionCheckComp) {
-                APIStep = 1 // フローの段階を更新
+                //APIStep = 1 // フローの段階を更新
                 print("比較結果")
                 print(VersionCheckState)
                 if VersionCheckState == -1 {
@@ -168,7 +168,7 @@ struct SplashView: View {
                     return
                 }
             }
-            APIStep = 2 // フローの段階を更新
+            //APIStep = 2 // フローの段階を更新
         }
         
         print("step3")
