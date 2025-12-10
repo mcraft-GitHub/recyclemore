@@ -26,29 +26,27 @@ struct ErrorBackModalView: View {
             {
                 VStack() {
                     Text("エラー")
-                        .bold()
                         .frame(width: 260,height: 23)
-                        .font(.custom("NotoSansJP-Regular", size: 17))
+                        .font(.system(size: 17, weight: .bold))
                         .padding(.top,30)
                         .padding(.bottom,17)
                     
                     Text(messag)
                         .frame(width: 260, alignment: .leading)
-                        .font(.custom("NotoSansJP-Regular", size: 15))
+                        .font(.system(size: 15))
                         .padding(.bottom,15)
                         .padding(.horizontal,20)
                     
-                    Text("エラーコード: \(code)")
+                    Text("【エラーコード: \(code)】")
                         .frame(width: 260, alignment: .leading)
-                        .font(.custom("NotoSansJP-Regular", size: 15))
+                        .font(.system(size: 15))
                         .padding(.bottom,17)
                     
                     Button("ログイン画面へ") {
                         isShowingModal = false
                     }
                     .frame(width: 124,height: 32)
-                    .font(.custom("NotoSansJP-Regular", size: 12))
-                    .bold()
+                    .font(.system(size: 12, weight: .bold))
                     .background(.black)
                     .foregroundColor(.white)
                     .cornerRadius(6)
@@ -65,15 +63,14 @@ struct ErrorBackModalView: View {
             {
                 VStack() {
                     Text("エラー")
-                        .bold()
                         .frame(width: 260,height: 23)
-                        .font(.custom("NotoSansJP-Regular", size: 17))
+                        .font(.system(size: 17, weight: .bold))
                         .padding(.top,30)
                         .padding(.bottom,17)
                     
                     Text(messag)
                         .frame(width: 260, alignment: .leading)
-                        .font(.custom("NotoSansJP-Regular", size: 15))
+                        .font(.system(size: 15))
                         .padding(.bottom,15)
                         .padding(.horizontal,20)
 
@@ -81,8 +78,7 @@ struct ErrorBackModalView: View {
                         isShowingModal = false
                     }
                     .frame(width: 124,height: 32)
-                    .font(.custom("NotoSansJP-Regular", size: 12))
-                    .bold()
+                    .font(.system(size: 12, weight: .bold))
                     .background(.black)
                     .foregroundColor(.white)
                     .cornerRadius(6)

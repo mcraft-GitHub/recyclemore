@@ -16,7 +16,6 @@ struct SplashView: View {
     @State private var VersionCheckComp = false
     @State private var AutoLoginComp = false
     @State private var StatusCode = 200
-    @State private var isError = false
     @State private var errorMessage = ""
     @State private var errorCode = ""
     @State private var isSimple = false
@@ -26,13 +25,12 @@ struct SplashView: View {
     @State private var isShowingModal = false
     @State private var modalType:ModalType = .update
     
-    @State private var NeedUpdate = false
     @State private var APIStep = 0
     
     @State private var StartTime = Date()
     
-    @State private var count = 2
-    @State private var count2 = 2
+    //@State private var count = 2
+    //@State private var count2 = 2
     
     var body: some View {
         GeometryReader { geometry in
@@ -99,13 +97,11 @@ struct SplashView: View {
                 print("比較結果")
                 print(VersionCheckState)
                 if VersionCheckState == -1 {
-                    NeedUpdate = true
                     isShowingModal = true
                     modalType = .forceUpdate
                     return
                 }
                 else if VersionCheckState == 1 {
-                    NeedUpdate = true
                     isShowingModal = true
                     //TODO:必要なら任意更新のモーダルにする
                     modalType = .forceUpdate
@@ -144,12 +140,12 @@ struct SplashView: View {
             else
             {
                 print("ホーム画面へ")
-                
+                /*
                 if(count > 0)
                 {
                     token = "xxxxxxxxxxxxxxxx"
                     count -= 1
-                }
+                }*/
                 
                 AutoLoginComp = await AutoLoginAPI()
                 
@@ -202,12 +198,12 @@ struct SplashView: View {
         }
         
         var os = "iOS"
-        
+        /*
         if(count2 > 0)
         {
             os = "iOS2"
             count2 -= 1
-        }
+        }*/
         
         // 送信データ
         let params = [
@@ -245,10 +241,10 @@ struct SplashView: View {
                 if let decoded = try? JSONDecoder().decode(GetAppVersionResponse.self, from: data) {
                     await MainActor.run{
                         print(decoded.item.need_version)
-                        
                         // ここで比較した結果をもらって反映
                         VersionCheckState = compareVersion(decoded.item.now_version,decoded.item.need_version)
                     }
+                    // 比較結果に関わらずAPIの実行結果としては成功
                     return true
                 }
                 else
@@ -274,7 +270,6 @@ struct SplashView: View {
                             }
                         }
                         
-                        isError = true
                         errorMessage = ERROR_MES_SPLASH
                         errorCode = code
                         isSimple = false
@@ -285,45 +280,32 @@ struct SplashView: View {
             }
             else
             {
-                // エラー発生を記憶
-                isError = true
-                // 結果に問題があったのでステータスに応じたモーダルを表示
+                // 結果に問題があったのでモーダル表示内容を作成
+                errorMessage = ERROR_MES_SPLASH
+                isSimple = false
+                modalType = .retry
+                
                 if(StatusCode == 400) {
                     print("400")
-                    errorMessage = ERROR_MES_SPLASH
                     errorCode = "-400"
-                    isSimple = false
-                    modalType = .retry
                 }
                 else if(StatusCode == 401)
                 {
                     print("401")
-                    errorMessage = ERROR_MES_SPLASH
                     errorCode = "-401"
-                    isSimple = false
-                    modalType = .retry
                 }
                 else if(StatusCode == 429) {
                     print("429")
-                    errorMessage = ERROR_MES_SPLASH
                     errorCode = "-429"
-                    isSimple = false
-                    modalType = .retry
                 }
                 else if(StatusCode == 500) {
                     print("500")
-                    errorMessage = ERROR_MES_SPLASH
                     errorCode = "-500"
-                    isSimple = false
-                    modalType = .retry
                 }
                 else
                 {
                     print("999")
-                    errorMessage = ERROR_MES_SPLASH
                     errorCode = "-999"
-                    isSimple = false
-                    modalType = .retry
                 }
                 return false
             }
@@ -333,7 +315,6 @@ struct SplashView: View {
                 if error is URLError {
                     // 通信失敗として処理
                     print("通信失敗")
-                    isError = true
                     errorMessage = ERROR_MES_NET
                     errorCode = ""
                     isSimple = true
@@ -341,7 +322,6 @@ struct SplashView: View {
                 } else {
                     // 通信以外の実行エラー（予期しない例外）として処理
                     print("想定外のエラー")
-                    isError = true
                     errorMessage = ERROR_MES_SPLASH
                     errorCode = "-999"
                     isSimple = false
@@ -429,7 +409,6 @@ struct SplashView: View {
                             }
                         }
                         
-                        isError = true
                         errorMessage = ERROR_MES_SPLASH
                         errorCode = code
                         isSimple = false
@@ -446,48 +425,28 @@ struct SplashView: View {
                     //KeychainHelper.shared.delete(key: "token")
                     //KeychainHelper.shared.delete(key: "email")
                     
-                    // 結果に問題があったのでステータスに応じたモーダルを表示
+                    // 結果に問題があったのでモーダル表示内容を作成
+                    errorMessage = ERROR_MES_SPLASH
+                    isSimple = false
+                    modalType = .retry
+                    
                     if(StatusCode == 400) {
                         // ログイン失敗
                         print("400")
-                        isError = true
-                        errorMessage = ERROR_MES_SPLASH
                         errorCode = "-400"
-                        isSimple = false
-                        modalType = .retry
                     }
                     else if(StatusCode == 401) {
-                        // エラー発生を記憶
-                        isError = true
-                        errorMessage = ERROR_MES_SPLASH
                         errorCode = "-401"
-                        isSimple = false
-                        modalType = .retry
                     }
                     else if(StatusCode == 429) {
-                        // エラー発生を記憶
-                        isError = true
-                        errorMessage = ERROR_MES_SPLASH
                         errorCode = "-429"
-                        isSimple = false
-                        modalType = .retry
                     }
                     else if(StatusCode == 500) {
-                        // エラー発生を記憶
-                        isError = true
-                        errorMessage = ERROR_MES_SPLASH
                         errorCode = "-500"
-                        isSimple = false
-                        modalType = .retry
                     }
                     else
                     {
-                        // エラー発生を記憶
-                        isError = true
-                        errorMessage = ERROR_MES_SPLASH
                         errorCode = "-999"
-                        isSimple = false
-                        modalType = .retry
                     }
                 }
                 return false
@@ -502,16 +461,15 @@ struct SplashView: View {
                 if error is URLError {
                     // 通信失敗として処理
                     print("通信失敗")
-                    isError = true
                     errorMessage = ERROR_MES_NET
                     errorCode = ""
                     isSimple = true
                     modalType = .retry
                 } else {
                     // 通信以外の実行エラー（予期しない例外）として処理
-                    isError = true
                     errorMessage = ERROR_MES_SPLASH
                     errorCode = "-999"
+                    isSimple = false
                     modalType = .retry
                 }
             }

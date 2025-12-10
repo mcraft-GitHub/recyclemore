@@ -14,15 +14,18 @@ struct ForceUpdateView: View {
             Color.black.opacity(0.4) // 背景暗く
                 .ignoresSafeArea()
             
-            VStack(spacing: 16) {
+            VStack(spacing: 0) {
                 Text("アップデートのお知らせ")
-                    .bold()
                     .frame(width: 260,height: 23)
+                    .font(.system(size: 17, weight: .bold))
+                    .padding(.top,30)
+                    .padding(.bottom,17)
                 
                 Text("アプリを更新しました。\n最新版アプリへのアップデートをお願いします")
                     .frame(width: 260, alignment: .leading)
-                
-                
+                    .font(.system(size: 15))
+                    .padding(.bottom,17)
+
                 Button("アップデート") {
                     // App Storeへ
                     print("App Storeへ")
@@ -34,15 +37,19 @@ struct ForceUpdateView: View {
                      */
                 }
                 .frame(width: 112,height: 32)
+                .font(.system(size: 12, weight: .bold))
                 .background(.black)
                 .foregroundColor(.white)
-                .cornerRadius(12)
+                .cornerRadius(6)
+                .shadow(color: Color.black.opacity(0.3), radius: 6, x: 0, y: 1)
+                .padding(.top,20)
+                .padding(.bottom,30)
             }
-            .padding()
+            .padding(.horizontal,20)
             .background(Color.white)
-            .cornerRadius(12)
-            .shadow(radius: 8)
-            .frame(maxWidth: 320)
+            .cornerRadius(6)
+            .shadow(color: Color.black.opacity(0.25), radius: 5, x: 5, y: 5)
+            .frame(maxWidth: 300)
         }
     }
 }

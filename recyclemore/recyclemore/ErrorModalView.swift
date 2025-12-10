@@ -25,29 +25,27 @@ struct ErrorModalView: View {
             {
                 VStack() {
                     Text("エラー")
-                        .bold()
                         .frame(width: 260,height: 23)
-                        .font(.custom("NotoSansJP-Regular", size: 17))
+                        .font(.system(size: 17, weight: .bold))
                         .padding(.top,30)
                         .padding(.bottom,17)
                     
                     Text(messag)
                         .frame(width: 260, alignment: .leading)
-                        .font(.custom("NotoSansJP-Regular", size: 15))
+                        .font(.system(size: 15))
                         .padding(.bottom,15)
                         .padding(.horizontal,20)
                     
-                    Text("エラーコード: \(code)")
+                    Text("【エラーコード: \(code)】")
                         .frame(width: 260, alignment: .leading)
-                        .font(.custom("NotoSansJP-Regular", size: 15))
+                        .font(.system(size: 15))
                         .padding(.bottom,17)
                     
                     Button("閉じる") {
                         isShowingModal = false
                     }
-                    .frame(width: 124,height: 32)
-                    .font(.custom("NotoSansJP-Regular", size: 12))
-                    .bold()
+                    .frame(width: 100,height: 32)
+                    .font(.system(size: 12, weight: .bold))
                     .background(.black)
                     .foregroundColor(.white)
                     .cornerRadius(6)
@@ -63,28 +61,31 @@ struct ErrorModalView: View {
             }
             else
             {
-                VStack(spacing: 16) {
+                VStack() {
                     Text("エラー")
-                        .bold()
                         .frame(width: 260,height: 23)
-                        .font(.custom("NotoSansJP-Regular", size: 17))
+                        .font(.system(size: 17, weight: .bold))
+                        .padding(.top,30)
+                        .padding(.bottom,17)
                     
                     Text(messag)
                         .frame(width: 260, alignment: .leading)
-                        .font(.custom("NotoSansJP-Regular", size: 15))
+                        .font(.system(size: 15))
+                        .padding(.bottom,15)
+                        .padding(.horizontal,20)
                     
                     Button("閉じる") {
                         isShowingModal = false
                     }
-                    .frame(width: 124,height: 32)
-                    .font(.custom("NotoSansJP-Regular", size: 12))
+                    .frame(width: 100,height: 32)
+                    .font(.system(size: 12, weight: .bold))
                     .background(.black)
                     .foregroundColor(.white)
                     .cornerRadius(6)
                     .shadow(color: Color.black.opacity(0.3), radius: 6, x: 0, y: 1)
                     .padding(.top,20)
+                    .padding(.bottom,30)
                 }
-                .padding()
                 .background(Color.white)
                 .cornerRadius(6)
                 .shadow(color: Color.black.opacity(0.25), radius: 5, x: 5, y: 5)
