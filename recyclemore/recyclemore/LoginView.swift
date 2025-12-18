@@ -30,6 +30,9 @@ struct LoginView: View {
     @State private var topPadding: CGFloat = 120 // メインコンテンツパディング高
     @State private var topPaddingOffset: CGFloat = 0 // パディング調整値
     
+    enum Field { case email, password }
+    @FocusState private var focusedField: Field?
+    
     var body: some View {
         if isLoading {
             LoadingView()
@@ -38,7 +41,8 @@ struct LoginView: View {
         {
             ZStack {
                 // 背景色
-                Color(UIColor.systemBackground).ignoresSafeArea()
+                Color(UIColor.systemBackground)
+                    .ignoresSafeArea()
                 GeometryReader { geo in
                     ZStack() {
                         // メインコンテンツ
@@ -49,9 +53,17 @@ struct LoginView: View {
                                 Spacer()
                             }
                             .frame(minHeight: geo.size.height)
+                            .contentShape(Rectangle()) // 透明でもタップ取れるようにする
+                                    .onTapGesture {
+                                        // 適当な場所がタップされたのでキーボードを閉じるためにフォーカスを外す
+                                        focusedField = nil
+                                    }
                         }
                     }
                     headerView
+                        .onTapGesture {
+                            focusedField = nil
+                        }
                     
                     if isShowingModal {
                         switch modalType {
@@ -147,7 +159,7 @@ struct LoginView: View {
                 
                 // フォーム領域
                 VStack{
-                    LoginInputSectionView(email: $email, password: $password,currentView: $currentView,emailError: emailErrorMessage,passwordError: passwordErrorMessage
+                    LoginInputSectionView(email: $email, password: $password,currentView: $currentView,emailError: emailErrorMessage,passwordError: passwordErrorMessage,focusedField: $focusedField
                     )
                 }
                 .frame(maxWidth: .infinity)
@@ -197,6 +209,10 @@ struct LoginView: View {
                             var email_OK = false
                             var pass_OK = false
                             topPaddingOffset = 0
+                            
+                            // 入力完了なのでキーボードを閉じる＝フォーカスを入力フィールドから外す
+                            focusedField = nil
+                            
                             if email != "" {
                                 if(isValidEmail(email)) {
                                     emailErrorMessage = nil

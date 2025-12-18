@@ -15,8 +15,8 @@ struct InputFieldBlock: View {
     var isSecure:Bool = false   //秘匿性の有無
     @State private var isHidden: Bool = true    // パスワードのチラ見せ用
     // 親ビューの FocusState の Binding を受け取る
-    @FocusState.Binding var focusedField: LoginInputSectionView.Field?
-    let fieldType: LoginInputSectionView.Field
+    @FocusState.Binding var focusedField: LoginView.Field?
+    let fieldType: LoginView.Field
     
     // エラーメッセージの存在をチェック
     var hasError: Bool {
@@ -135,7 +135,7 @@ struct InputFieldBlock: View {
     //InputFieldBlock(label: "ラベル",text: .constant("入力値"),errorMessage: "エラー", isSecure: false, focusedField: <#FocusState<LoginInputSectionView.Field?>.Binding#> , fieldType: .email)
     
     //@State var text = ""
-    @FocusState var focusedField: LoginInputSectionView.Field?
+    @FocusState var focusedField: LoginView.Field?
     
     InputFieldBlock(
         label: "ラベル",
@@ -143,6 +143,6 @@ struct InputFieldBlock: View {
         errorMessage: "エラー",
         isSecure: false,
         focusedField: $focusedField,
-        fieldType: .email
+        fieldType: LoginView.Field.email
     )
 }

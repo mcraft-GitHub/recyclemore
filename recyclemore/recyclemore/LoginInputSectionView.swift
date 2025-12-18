@@ -14,16 +14,15 @@ struct LoginInputSectionView: View {
     @Binding var currentView: AppViewMode
     var emailError: String?
     var passwordError: String?
-    enum Field { case email, password }
-    @FocusState private var focusedField: Field?
+    @FocusState.Binding var focusedField: LoginView.Field?
     
     var body: some View {
         VStack(spacing:20) {
             // メールアドレス入力ブロック
-            InputFieldBlock(label: "メールアドレス", text: $email, errorMessage: emailError, isSecure: false,focusedField: $focusedField, fieldType: .email)
+            InputFieldBlock(label: "メールアドレス", text: $email, errorMessage: emailError, isSecure: false,focusedField: $focusedField, fieldType: LoginView.Field.email)
             
             // パスワード入力ブロック
-            InputFieldBlock(label: "パスワード", text: $password, errorMessage: passwordError,isSecure: true,focusedField: $focusedField, fieldType: .password)
+            InputFieldBlock(label: "パスワード", text: $password, errorMessage: passwordError,isSecure: true,focusedField: $focusedField, fieldType: LoginView.Field.password)
             
             // テキスト+アイコン
             HStack(spacing : 8) {
@@ -54,5 +53,7 @@ struct LoginInputSectionView: View {
 }
 
 #Preview {
-    LoginInputSectionView(email: .constant("アドレス"), password: .constant("password"),currentView: .constant(.login))
+    @FocusState var focusedField: LoginView.Field?
+    
+    LoginInputSectionView(email: .constant("アドレス"), password: .constant("password"),currentView: .constant(.login),focusedField: $focusedField)
 }
