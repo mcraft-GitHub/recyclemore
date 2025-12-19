@@ -28,6 +28,7 @@ struct WebContentView: View {
                           UIwebView: $webView
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea(.keyboard)
             if isShowingModal {
                 switch modalType {
                 case .close :
