@@ -22,13 +22,24 @@ struct WebContentView: View {
     
     var body: some View {
         ZStack {
-            HybridWebView(url: URL(string: MultiViewURL)!,
-                          onCustomEvent: { action, params in handleWebEvent(action: action, params: params)
-            },
-                          UIwebView: $webView
-            )
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .ignoresSafeArea(.keyboard)
+            if shouldIgnoreKeyboardSafeArea {
+                HybridWebView(url: URL(string: MultiViewURL)!,
+                              onCustomEvent: { action, params in handleWebEvent(action: action, params: params)
+                },
+                              UIwebView: $webView
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea(.keyboard)
+            }
+            else
+            {
+                HybridWebView(url: URL(string: MultiViewURL)!,
+                              onCustomEvent: { action, params in handleWebEvent(action: action, params: params)
+                },
+                              UIwebView: $webView
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
             if isShowingModal {
                 switch modalType {
                 case .close :
@@ -174,6 +185,12 @@ struct WebContentView: View {
             print("要求")
             print(action)
         }
+    }
+    
+    // iOS 18 系以下は ignore を適用
+    var shouldIgnoreKeyboardSafeArea: Bool {
+        let version = ProcessInfo().operatingSystemVersion
+        return version.majorVersion <= 18
     }
 }
 
