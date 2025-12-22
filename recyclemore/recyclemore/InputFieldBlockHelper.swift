@@ -63,14 +63,14 @@ struct InputFieldBlock: View {
                         }) {
                             if(isHidden)
                             {
-                                Image("passeye")
+                                Image("passeye_c")
                                     .resizable()
                                     .frame(width: 20, height: 20)
                                     .foregroundColor(.gray)
                             }
                             else
                             {
-                                Image("passeye_c")
+                                Image("passeye")
                                     .resizable()
                                     .frame(width: 20, height: 20)
                                     .foregroundColor(.gray)
