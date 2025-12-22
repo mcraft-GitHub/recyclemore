@@ -42,9 +42,11 @@ struct LoginView: View {
             ZStack {
                 // 背景色
                 Color(UIColor.systemBackground)
-                    .ignoresSafeArea()
                 GeometryReader { geo in
-                    ZStack() {
+                    VStack(spacing: 0) {
+                        // ヘッダー領域までの蓋
+                        Color.clear
+                            .frame(height: 60)
                         // メインコンテンツ
                         ScrollView{
                             VStack{
@@ -52,12 +54,12 @@ struct LoginView: View {
                                 mainContentView
                                 Spacer()
                             }
-                            .frame(minHeight: geo.size.height)
+                            .frame(minHeight: geo.size.height - 60)
                             .contentShape(Rectangle()) // 透明でもタップ取れるようにする
-                                    .onTapGesture {
-                                        // 適当な場所がタップされたのでキーボードを閉じるためにフォーカスを外す
-                                        focusedField = nil
-                                    }
+                            .onTapGesture {
+                                // 適当な場所がタップされたのでキーボードを閉じるためにフォーカスを外す
+                                focusedField = nil
+                            }
                         }
                     }
                     headerView
