@@ -222,13 +222,13 @@ struct LoginView: View {
                                 }
                                 else
                                 {
-                                    emailErrorMessage = "メールアドレスが正しくありません"
+                                    emailErrorMessage = "メールアドレスが正しくありません。"
                                     topPaddingOffset += 21
                                 }
                             }
                             else
                             {
-                                emailErrorMessage = "メールアドレスが未入力です"
+                                emailErrorMessage = "メールアドレスが入力されていません。"
                                 topPaddingOffset += 21
                             }
                             
@@ -239,13 +239,13 @@ struct LoginView: View {
                                 }
                                 else
                                 {
-                                    passwordErrorMessage = "パスワードが正しくありません"
+                                    passwordErrorMessage = "パスワードが正しくありません。"
                                     topPaddingOffset += 21
                                 }
                             }
                             else
                             {
-                                passwordErrorMessage = "パスワードが未入力です"
+                                passwordErrorMessage = "パスワードが入力されていません。"
                                 topPaddingOffset += 21
                             }
                             
