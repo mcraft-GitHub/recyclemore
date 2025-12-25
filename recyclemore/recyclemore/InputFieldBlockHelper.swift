@@ -131,10 +131,6 @@ struct InputFieldBlock: View {
 
 // プレビューする時に渡される状態を定義
 #Preview {
-    //@FocusState private var focusedField: LoginInputSectionView.Field?
-    //InputFieldBlock(label: "ラベル",text: .constant("入力値"),errorMessage: "エラー", isSecure: false, focusedField: <#FocusState<LoginInputSectionView.Field?>.Binding#> , fieldType: .email)
-    
-    //@State var text = ""
     @FocusState var focusedField: LoginView.Field?
     
     InputFieldBlock(

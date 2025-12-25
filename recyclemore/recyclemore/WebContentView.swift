@@ -61,25 +61,6 @@ struct WebContentView: View {
                 }
             }
         }
-        //https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php
-        
-        
-        /*
-         WebView(url: URL(string: "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php")!) {
-         action in
-         print("アクション")
-         print(action)
-         }
-         */
-        /*
-         WebView(url: URL(string: "https://www.apple.com")!) {
-         action in
-         print("アクション")
-         print(action)
-         }
-         */
-        
-        //ContentWebView()
     }
     // 各イベント処理
     func handleWebEvent(action: String, params: [String: Any]?) {

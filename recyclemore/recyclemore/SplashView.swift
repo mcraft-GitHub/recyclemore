@@ -28,9 +28,7 @@ struct SplashView: View {
     @State private var APIStep = 0
     
     @State private var StartTime = Date()
-    
-    //@State private var count = 2
-    //@State private var count2 = 2
+
     
     var body: some View {
         GeometryReader { geometry in
@@ -140,12 +138,6 @@ struct SplashView: View {
             else
             {
                 print("ホーム画面へ")
-                /*
-                if(count > 0)
-                {
-                    token = "xxxxxxxxxxxxxxxx"
-                    count -= 1
-                }*/
                 
                 AutoLoginComp = await AutoLoginAPI()
                 
@@ -198,12 +190,6 @@ struct SplashView: View {
         }
         
         var os = "iOS"
-        /*
-        if(count2 > 0)
-        {
-            os = "iOS2"
-            count2 -= 1
-        }*/
         
         // 送信データ
         let params = [

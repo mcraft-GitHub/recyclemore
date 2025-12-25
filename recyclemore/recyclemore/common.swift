@@ -49,15 +49,12 @@ let BASE_SCREEN_HEIGHT = 844    // 基準画面高さ
 let SPLASH_WINDOW_TIME = 3      // スプラッシュ画面の表示時間
 
 // 汎用エラーメッセージ定型分
-let ERROR_MES_DEF = "通信に問題が発生しました。しばらくしてから再度お試しください。"
 let ERROR_MES_EXC = "予期しないエラーが発生しました。時間をおいて再度お試しください。"
 let ERROR_MES_NET = "通信が有効ではない、または通信状況が悪いためサーバーと接続できませんでした"
 let ERROR_MES_LOGIN = "メールアドレスまたはパスワードが間違っています。"
 let ERROR_MES_SPLASH = "エラーが発生しました。\n何度も続く場合は\n「TEL:0172-35-1424」または「メールアドレス：support@recyclemore.jp」よりお問い合わせください。"
 let ERROR_MES_LOGIN_HEAVY = "ログインに失敗しました。\n何度も続く場合は\n「TEL:0172-35-1424」または「メールアドレス：support@recyclemore.jp」よりお問い合わせください。"
 let ERROR_MES_FIRST_LOGIN = "エラーが発生しました。\nログイン画面よりログインしてください"
-let ERROR_MES_429 = "アクセスが集中しています。しばらくしてから再度お試しください。"
-let ERROR_MES_500 = "サーバーで問題が発生しました。しばらくしてから再度お試しください。"
 
 // 共通の変数
 // マルチ画面で表示するURL情報
