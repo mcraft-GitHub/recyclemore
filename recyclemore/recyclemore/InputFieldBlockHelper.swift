@@ -18,15 +18,21 @@ struct InputFieldBlock: View {
     @FocusState.Binding var focusedField: LoginView.Field?
     let fieldType: LoginView.Field
     
+    //アクセシビリティ対応
+    @ScaledMetric(relativeTo: .body) private var ActivefontSize12: CGFloat = 12
+    @ScaledMetric(relativeTo: .body) private var ActivefontSize15: CGFloat = 15
+    
     // エラーメッセージの存在をチェック
     var hasError: Bool {
         return errorMessage != nil && !errorMessage!.isEmpty
     }
     
     var body: some View {
+        
+        
         VStack(alignment: .leading, spacing: 5) {
             Text(label)
-                .font(.system(size: 15,weight: .bold))
+                .font(.system(size: ActivefontSize15,weight: .bold))
                 .frame(height: 20)
             
             // 枠線の設定(エラーがある時は赤くなる)
@@ -121,7 +127,7 @@ struct InputFieldBlock: View {
             // エラーがある時だけ表示されるメッセージ
             if let error = errorMessage {
                 Text(error)
-                    .font(.system(size: 12))
+                    .font(.system(size: ActivefontSize12))
                     .frame(height: 16)
                     .foregroundColor(.red)
             }

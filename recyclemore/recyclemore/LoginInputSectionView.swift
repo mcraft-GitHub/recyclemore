@@ -16,6 +16,9 @@ struct LoginInputSectionView: View {
     var passwordError: String?
     @FocusState.Binding var focusedField: LoginView.Field?
     
+    //アクセシビリティ対応
+    @ScaledMetric(relativeTo: .body) private var ActivefontSize15: CGFloat = 15
+    
     var body: some View {
         VStack(spacing:20) {
             // メールアドレス入力ブロック
@@ -28,6 +31,7 @@ struct LoginInputSectionView: View {
             HStack(spacing : 8) {
                 Text("パスワードを忘れた方")
                     .lineSpacing(0)
+                    .font(.system(size: ActivefontSize15))
                     .frame(height: 20)
                 Image(systemName: "chevron.right")
                     .resizable()
