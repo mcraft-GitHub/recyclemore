@@ -55,12 +55,20 @@ struct SplashView: View {
                         })
                     case .close :
                         ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
+                    case .session:
+                        ErrorSessionModalView(isShowingModal: $isShowingModal,currentView: $currentView,messag: errorMessage,code: errorCode,isSimple: isSimple, onTap: {
+                            Task{
+                                withAnimation(.none) {
+                                    currentView = .login
+                                }
+                            }
+                        })
                     case .update :
                         UpdateModal(isShowingModal: $isShowingModal)
                         
                     case .forceUpdate :
                         ForceUpdateView()
-                        
+                    
                     default:
                         EmptyView()
                     }
@@ -359,9 +367,10 @@ struct SplashView: View {
                 }
             }
             
-            // ログインに成功していれば
+            // 通信に成功していれば
             if StatusCode == 200
             {
+                // ログイン成功
                 if let decoded = try? JSONDecoder().decode(LoginResponse.self, from: data) {
                     await MainActor.run{
                         // 結果からユーザー情報を作成
@@ -369,11 +378,10 @@ struct SplashView: View {
                     }
                     return true
                 }
-                else
+                else // ログイン失敗
                 {
-                    // TODO:失敗する情報を削除
-                    //KeychainHelper.shared.delete(key: "token")
-                    //KeychainHelper.shared.delete(key: "email")
+                    KeychainHelper.shared.delete(key: "token")
+                    KeychainHelper.shared.delete(key: "email")
                     await MainActor.run {
                         print("デコード失敗")
                         
@@ -395,10 +403,10 @@ struct SplashView: View {
                             }
                         }
                         
-                        errorMessage = ERROR_MES_SPLASH
+                        errorMessage = ERROR_MES_SESSION
                         errorCode = code
-                        isSimple = false
-                        modalType = .retry
+                        isSimple = true
+                        modalType = .session
                     }
                     return false
                 }
