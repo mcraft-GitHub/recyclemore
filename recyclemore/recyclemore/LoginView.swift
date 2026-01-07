@@ -33,6 +33,9 @@ struct LoginView: View {
     enum Field { case email, password }
     @FocusState private var focusedField: Field?
     
+    //アクセシビリティ対応
+    @ScaledMetric(relativeTo: .body) private var ActivefontSize15: CGFloat = 15
+    
     var body: some View {
         if isLoading {
             LoadingView()
@@ -194,6 +197,7 @@ struct LoginView: View {
                         Text("戻る")
                             .frame(maxWidth: .infinity,minHeight: 20, maxHeight: 40)
                             .fontWeight(.bold)
+                            .font(.system(size: ActivefontSize15))
                             .background(Color(hex: "#9FA0A0"))
                             .foregroundColor(.white)
                             .cornerRadius(6)
@@ -264,6 +268,7 @@ struct LoginView: View {
                     })                                {
                         Text("ログイン")
                             .frame(maxWidth: .infinity,minHeight: 20, maxHeight: 40)
+                            .font(.system(size: ActivefontSize15))
                             .fontWeight(.bold)
                             .background(Color(hex: "#0099D9"))
                             .foregroundColor(.white)
