@@ -13,6 +13,10 @@ struct recyclemoreApp: App {
     @StateObject private var appState = AppState()
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @Environment(\.scenePhase) private var scenePhase
+    
+    @State private var original: CGFloat = UIScreen.main.brightness
+    @State private var temp: CGFloat = UIScreen.main.brightness
     
     var body: some Scene {
         WindowGroup {
@@ -73,6 +77,23 @@ struct recyclemoreApp: App {
                     MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php?Z=\(finalURL)&path=\(fullPath)"
                 }
         }
+        .onChange(of: scenePhase) { phase in
+            switch phase {
+            case .active:
+                print("フォアグラウンド")
+                UIScreen.main.brightness = temp
+            case .inactive:
+                print("非アクティブ")
+            case .background:
+                print("バックグラウンド（撤収）")
+                temp = UIScreen.main.brightness
+                UIScreen.main.brightness = original
+            @unknown default:
+                break
+            }
+        }
+
+
     }
 }
 
