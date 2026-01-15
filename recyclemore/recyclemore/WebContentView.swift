@@ -19,6 +19,11 @@ struct WebContentView: View {
     @State private var isShowingModal = false
     @State private var modalType:ModalType = .close
     @State private var original: CGFloat = UIScreen.main.brightness
+    @State private var temp: CGFloat = UIScreen.main.brightness
+    @Environment(\.scenePhase) private var scenePhase
+    
+    // 輝度変更APIが走ったことを示すフラグ
+    @State private var IsChangedBrightness = false
     
     var body: some View {
         ZStack {
@@ -55,10 +60,29 @@ struct WebContentView: View {
                     if let webView = webView,
                        let url = webView.url ?? URL(string: MultiViewURL) {
                         var request = URLRequest(url: url)
-                            request.cachePolicy = .reloadIgnoringLocalCacheData
+                        request.cachePolicy = .reloadIgnoringLocalCacheData
                         webView.load(URLRequest(url: url))
                     }
                 }
+            }
+        }
+        .onChange(of: scenePhase) { phase in
+            if phase == .background || phase == .inactive {
+                // バックグラウンド or ロック時(ロックを正確に判断することはできない)
+                temp = UIScreen.main.brightness
+                UIScreen.main.brightness = original
+                IsChangedBrightness = false
+                print("どっかいった")
+            }
+            else if phase == .active {
+                // フォアグラウンド or ロック解除
+                if(!IsChangedBrightness)
+                {
+                    // フォアグラウンドに戻るとフラグが立つので事実上ロック解除時の処理
+                    UIScreen.main.brightness = temp
+                }
+                IsChangedBrightness = false
+                print("帰ってきた")
             }
         }
     }
@@ -95,6 +119,11 @@ struct WebContentView: View {
             print("輝度")
             let brightness = params?["brightness"] as? Float ?? 1.0
             
+            IsChangedBrightness = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                IsChangedBrightness = false
+            }
+            
             print("変更先")
             print(brightness)
 
@@ -105,7 +134,11 @@ struct WebContentView: View {
             else
             {
                 print("輝度変更")
-                original = UIScreen.main.brightness
+                if(brightness == 1.0)
+                {
+                    // 輝度を最大にする際に元の値を記憶する
+                    original = UIScreen.main.brightness
+                }
                 UIScreen.main.brightness = CGFloat(brightness)
             }
             

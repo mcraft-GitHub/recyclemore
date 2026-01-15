@@ -69,7 +69,6 @@ let HomeDir = "home"
 let CreateDir = "account/account-create/1"
 let ForgetDir = "account/forget/1"
 
-
 // URLスキームでアプリを開いたことを示すフラグ
 var IsByURL = false
 
