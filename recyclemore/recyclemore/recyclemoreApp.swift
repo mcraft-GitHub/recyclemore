@@ -70,7 +70,6 @@ struct recyclemoreApp: App {
                     }
                     // あくまで機能確認用の動作
                     // TODO:finalURLをwebViewで開くなり、fullPathの値でアプリ側の画面を制御する
-                    MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php?Z=\(finalURL)&path=\(fullPath)"
                 }
         }
     }

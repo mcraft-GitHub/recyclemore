@@ -45,14 +45,6 @@ struct WebContentView: View {
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            if isShowingModal {
-                /*switch modalType {
-                case .close :
-                    ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
-                default:
-                    EmptyView()
-                }*/
-            }
         }
         .onChange(of: isShowingModal) { newValue in
             if newValue == false {
@@ -72,7 +64,7 @@ struct WebContentView: View {
                 temp = UIScreen.main.brightness
                 UIScreen.main.brightness = original
                 IsChangedBrightness = false
-                print("どっかいった")
+                print("離れた")
             }
             else if phase == .active {
                 // フォアグラウンド or ロック解除
@@ -150,13 +142,13 @@ struct WebContentView: View {
             }
             
         case "network_error":
-            print("通信エラーですよ")
+            // 通信エラー検知
+            // web側でモーダルを表示するので表示自体は封印した
+            print("通信エラー検知")
             errorCode = ""
             errorMessage = ERROR_MES_NET
             modalType = .close
             isShowingModal = true
-            
-            // TODO:エラー出しても現状進行不能なのでその後どうするかは要確認
             
         case "goToLogin":
             print("ログイン画面へ")

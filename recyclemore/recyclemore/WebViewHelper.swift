@@ -211,13 +211,6 @@ struct HybridWebView: UIViewRepresentable {
         // webView内のページの読み込みが完了したタイミングで実行される
         // 特定の画面のみなんらかの処理を行いたい場合はここに仕込めば実現可能
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            /*
-            let js = """
-            document.querySelector('body').style.webkitTextSizeAdjust='100%';
-            """
-            webView.evaluateJavaScript(js, completionHandler: nil)
-            */
-            print("読み込み完了＆スタイル適用")
             //開いているURLを確認
             guard let currentURL = webView.url?.absoluteString else {
                     print("URLが取れなかった") // そんなことがあるかは知らぬ

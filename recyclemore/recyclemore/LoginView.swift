@@ -299,12 +299,7 @@ struct LoginView: View {
             return
         }
         
-        var sendtoken = Appvisor.appvisorUDID()
-        
-        if(Server == "Dev")
-        {
-            //sendtoken = "Success"
-        }
+        let sendtoken = Appvisor.appvisorUDID()
         
         // 送信データ
         let params = [
@@ -477,12 +472,7 @@ struct LoginView: View {
             return
         }
         
-        var sendtoken = Appvisor.appvisorUDID()
-        
-        if(Server == "Dev")
-        {
-            //sendtoken = "Success"
-        }
+        let sendtoken = Appvisor.appvisorUDID()
         
         // 送信データ
         let params = [

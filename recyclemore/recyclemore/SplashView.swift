@@ -197,7 +197,7 @@ struct SplashView: View {
             return false
         }
         
-        var os = "iOS"
+        let os = "iOS"
         
         // 送信データ
         let params = [
@@ -380,6 +380,7 @@ struct SplashView: View {
                 }
                 else // ログイン失敗
                 {
+                    // 失敗する情報を削除
                     KeychainHelper.shared.delete(key: "token")
                     KeychainHelper.shared.delete(key: "email")
                     await MainActor.run {
