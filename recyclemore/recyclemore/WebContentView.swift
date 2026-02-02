@@ -46,12 +46,12 @@ struct WebContentView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             if isShowingModal {
-                switch modalType {
+                /*switch modalType {
                 case .close :
                     ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
                 default:
                     EmptyView()
-                }
+                }*/
             }
         }
         .onChange(of: isShowingModal) { newValue in
