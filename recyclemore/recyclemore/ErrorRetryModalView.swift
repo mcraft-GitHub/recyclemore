@@ -28,7 +28,7 @@ struct ErrorRetryModalView: View {
                 VStack() {
                     Text("エラー")
                         .bold()
-                        .frame(width: 260,height: 23)
+                        .frame(width: 260,height: 26)
                         .font(.system(size: 17, weight: .bold))
                         .padding(.top,30)
                         .padding(.bottom,17)
@@ -36,12 +36,14 @@ struct ErrorRetryModalView: View {
                     Text(messag)
                         .frame(width: 260, alignment: .leading)
                         .font(.system(size: 15))
+                        .lineSpacing(15 * 0.5)
                         .padding(.bottom,15)
                         .padding(.horizontal,20)
                     
                     Text("【エラーコード: \(code)】")
                         .frame(width: 260, alignment: .leading)
                         .font(.system(size: 15))
+                        .lineSpacing(15 * 0.5)
                         .padding(.bottom,17)
                     
                     Button("リトライ") {
@@ -66,7 +68,7 @@ struct ErrorRetryModalView: View {
             {
                 VStack() {
                     Text("エラー")
-                        .frame(width: 260,height: 23)
+                        .frame(width: 260,height: 26)
                         .font(.system(size: 17, weight: .bold))
                         .padding(.top,30)
                         .padding(.bottom,17)
@@ -74,6 +76,7 @@ struct ErrorRetryModalView: View {
                     Text(messag)
                         .frame(width: 260, alignment: .leading)
                         .font(.system(size: 15))
+                        .lineSpacing(15 * 0.5)
                         .padding(.bottom,15)
                         .padding(.horizontal,20)
                     
