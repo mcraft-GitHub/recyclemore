@@ -191,7 +191,10 @@ struct SplashView: View {
     
     func GetAppVersionAPI() async -> Bool{
         // バージョン取得API
-        guard let url = URL(string: "https://api-recyclemore-cafzh7ewbngsdreu.japaneast-01.azurewebsites.net/v1/App/get-app-version")
+        /*
+        // 旧ルート版参考
+        guard let url = URL(string: "https://api-recyclemore-cafzh7ewbngsdreu.japaneast-01.azurewebsites.net/v1/App/get-app-version")*/
+        guard let url = URL(string: "https://www.emsdevelopers.com/v1/App/get-app-version")
         else
         {
             return false
@@ -328,7 +331,7 @@ struct SplashView: View {
     
     func AutoLoginAPI() async ->Bool {
         // ログインAPI
-        guard let url = URL(string: "https://api-recyclemore-cafzh7ewbngsdreu.japaneast-01.azurewebsites.net/v1/Auth/auto-login")
+        guard let url = URL(string: "https://www.emsdevelopers.com/v1/Auth/auto-login")
         else
         {
             return false

@@ -45,6 +45,14 @@ struct WebContentView: View {
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            if isShowingModal {
+                switch modalType {
+                case .offline :
+                    ErrorOffLineModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
+                default:
+                    EmptyView()
+                }
+            }
         }
         .onChange(of: isShowingModal) { newValue in
             if newValue == false {
@@ -147,7 +155,7 @@ struct WebContentView: View {
             print("通信エラー検知")
             errorCode = ""
             errorMessage = ERROR_MES_NET
-            modalType = .close
+            modalType = .offline
             isShowingModal = true
             
         case "goToLogin":

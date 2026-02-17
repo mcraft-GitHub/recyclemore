@@ -293,7 +293,7 @@ struct LoginView: View {
     
     func LoginAPI() async {
         // ログインAPI
-        guard let url = URL(string: "https://api-recyclemore-cafzh7ewbngsdreu.japaneast-01.azurewebsites.net/v1/Auth/login")
+        guard let url = URL(string: "https://www.emsdevelopers.com/v1/Auth/login")
         else
         {
             return
@@ -466,7 +466,7 @@ struct LoginView: View {
     
     func InitialLoginAPI() async {
         // 初回ログインAPI
-        guard let url = URL(string: "https://api-recyclemore-cafzh7ewbngsdreu.japaneast-01.azurewebsites.net/v1/Auth/initial-login")
+        guard let url = URL(string: "https://www.emsdevelopers.com/v1/Auth/initial-login")
         else
         {
             return

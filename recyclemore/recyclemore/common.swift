@@ -34,7 +34,7 @@ enum AppViewMode {
     case web
 }
 
-// モーダル種別 1:閉じる　2:リトライ 3:ログイン画面へ 4:アップデート 5:強制アップデート
+// モーダル種別 1:閉じる　2:リトライ 3:ログイン画面へ 4:アップデート 5:強制アップデート 6:オフライン
 enum ModalType {
     case close
     case retry
@@ -42,6 +42,7 @@ enum ModalType {
     case update
     case forceUpdate
     case session
+    case offline
 }
 
 // 定数
