@@ -10,7 +10,6 @@ import SwiftUI
 // 閉じるボタンでログイン画面に遷移するモーダル
 struct ErrorBackModalView: View {
     @Binding var isShowingModal: Bool
-    @Binding var currentView: AppViewMode
     
     @State var messag = "左詰め自動改行"
     @State var code = "エラーコード"
@@ -99,5 +98,5 @@ struct ErrorBackModalView: View {
 }
 
 #Preview {
-    ErrorBackModalView(isShowingModal: .constant(true),currentView: .constant(.web))
+    ErrorBackModalView(isShowingModal: .constant(true))
 }

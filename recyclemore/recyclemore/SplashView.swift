@@ -11,7 +11,7 @@ import AppVisorSDK
 // スプラッシュ画面、標準の機能だと時間の制御が不可だったのでカスタム対応
 struct SplashView: View {
     
-    @Binding var currentView: AppViewMode
+    @EnvironmentObject var appState: AppState
     @State private var VersionCheckState = 0
     @State private var VersionCheckComp = false
     @State private var AutoLoginComp = false
@@ -56,10 +56,10 @@ struct SplashView: View {
                     case .close :
                         ErrorModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode)
                     case .session:
-                        ErrorSessionModalView(isShowingModal: $isShowingModal,currentView: $currentView,messag: errorMessage,code: errorCode,isSimple: isSimple, onTap: {
+                        ErrorSessionModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode,isSimple: isSimple, onTap: {
                             Task{
                                 withAnimation(.none) {
-                                    currentView = .login
+                                    appState.currentView = .login
                                 }
                             }
                         })
@@ -185,7 +185,10 @@ struct SplashView: View {
         print("表示から３秒以上経過")
         
         withAnimation(.none) {
-            currentView = .web
+            if(appState.currentView == .splash)
+            {
+                appState.currentView = .web
+            }
         }
     }
     
@@ -194,7 +197,18 @@ struct SplashView: View {
         /*
         // 旧ルート版参考
         guard let url = URL(string: "https://api-recyclemore-cafzh7ewbngsdreu.japaneast-01.azurewebsites.net/v1/App/get-app-version")*/
-        guard let url = URL(string: "https://www.emsdevelopers.com/v1/App/get-app-version")
+        
+        var API_path = ""
+        if(API == "Dev")
+        {
+            API_path = API_BaseURL_Dev + "v1/App/get-app-version"
+        }
+        else
+        {
+            API_BaseURL_Dis + "v1/App/get-app-version"
+        }
+        
+        guard let url = URL(string: API_path)
         else
         {
             return false
@@ -331,7 +345,17 @@ struct SplashView: View {
     
     func AutoLoginAPI() async ->Bool {
         // ログインAPI
-        guard let url = URL(string: "https://www.emsdevelopers.com/v1/Auth/auto-login")
+        var API_path = ""
+        if(API == "Dev")
+        {
+            API_path = API_BaseURL_Dev + "v1/Auth/auto-login"
+        }
+        else
+        {
+            API_BaseURL_Dis + "v1/Auth/auto-login"
+        }
+        
+        guard let url = URL(string: API_path)
         else
         {
             return false
@@ -477,5 +501,5 @@ struct SplashView: View {
 }
 
 #Preview {
-    SplashView(currentView: .constant(.splash))
+    SplashView()
 }

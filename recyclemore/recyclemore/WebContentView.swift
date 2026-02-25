@@ -11,7 +11,7 @@ import WebKit
 // 実質的な本体機能はここ(WebViewの中)、URLを指定しwebページを表示する
 struct WebContentView: View {
     
-    @Binding var currentView: AppViewMode
+    @EnvironmentObject var appState: AppState
     @State private var webView: WKWebView? = nil  // ← WebViewを保持
     
     @State private var errorMessage = ""
@@ -91,7 +91,7 @@ struct WebContentView: View {
         switch action {
         case "login":
             print("ログイン")
-            currentView = .login
+            appState.currentView = .login
             
         case "logout":
             print("ログアウト実行")
@@ -168,7 +168,7 @@ struct WebContentView: View {
                 initial_email = mail
                 initial_token = token
             }
-            currentView = .login
+            appState.currentView = .login
             
         case "sendLoginInfo":
             print("JS")
@@ -209,5 +209,5 @@ struct WebContentView: View {
 }
 
 #Preview {
-    WebContentView(currentView: .constant(.web))
+    WebContentView()
 }

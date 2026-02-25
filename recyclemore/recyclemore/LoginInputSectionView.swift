@@ -11,7 +11,7 @@ import SwiftUI
 struct LoginInputSectionView: View {
     @Binding var email: String
     @Binding var password: String
-    @Binding var currentView: AppViewMode
+    @EnvironmentObject var appState: AppState
     var emailError: String?
     var passwordError: String?
     @FocusState.Binding var focusedField: LoginView.Field?
@@ -49,7 +49,7 @@ struct LoginInputSectionView: View {
                     MultiViewURL = BaseURL_Dis + ForgetDir
                 }
                 
-                currentView = .web
+                appState.currentView = .web
             }
         }
         .padding(.horizontal, 20)
@@ -59,5 +59,5 @@ struct LoginInputSectionView: View {
 #Preview {
     @FocusState var focusedField: LoginView.Field?
     
-    LoginInputSectionView(email: .constant("アドレス"), password: .constant("password"),currentView: .constant(.login),focusedField: $focusedField)
+    LoginInputSectionView(email: .constant("アドレス"), password: .constant("password"),focusedField: $focusedField)
 }

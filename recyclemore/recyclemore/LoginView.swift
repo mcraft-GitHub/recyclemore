@@ -11,7 +11,7 @@ import SwiftUI
 // ログイン画面
 struct LoginView: View {
     
-    @Binding var currentView: AppViewMode
+    @EnvironmentObject var appState: AppState
     
     @State private var email = ""
     @State private var password = ""
@@ -92,7 +92,7 @@ struct LoginView: View {
                                 }
                             })*/
                         case .back:
-                            ErrorBackModalView(isShowingModal: $isShowingModal,currentView: $currentView,messag: errorMessage,code: errorCode,isSimple: isSimple)
+                            ErrorBackModalView(isShowingModal: $isShowingModal,messag: errorMessage,code: errorCode,isSimple: isSimple)
                         default:
                             EmptyView()
                         }
@@ -164,7 +164,7 @@ struct LoginView: View {
                 
                 // フォーム領域
                 VStack{
-                    LoginInputSectionView(email: $email, password: $password,currentView: $currentView,emailError: emailErrorMessage,passwordError: passwordErrorMessage,focusedField: $focusedField
+                    LoginInputSectionView(email: $email, password: $password,emailError: emailErrorMessage,passwordError: passwordErrorMessage,focusedField: $focusedField
                     )
                 }
                 .frame(maxWidth: .infinity)
@@ -192,7 +192,7 @@ struct LoginView: View {
                         {
                             MultiViewURL = BaseURL_Dis + StartDir
                         }
-                        currentView = .web
+                        appState.currentView = .web
                     }) {
                         Text("戻る")
                             .frame(maxWidth: .infinity,minHeight: 20, maxHeight: 40)
@@ -293,7 +293,17 @@ struct LoginView: View {
     
     func LoginAPI() async {
         // ログインAPI
-        guard let url = URL(string: "https://www.emsdevelopers.com/v1/Auth/login")
+        var API_path = ""
+        if(API == "Dev")
+        {
+            API_path = API_BaseURL_Dev + "v1/Auth/login"
+        }
+        else
+        {
+            API_BaseURL_Dis + "v1/Auth/login"
+        }
+        
+        guard let url = URL(string: API_path)
         else
         {
             return
@@ -359,7 +369,7 @@ struct LoginView: View {
                         {
                             MultiViewURL = BaseURL_Dis + HomeDir
                         }
-                        currentView = .web
+                        appState.currentView = .web
                     }
                 }
                 else
@@ -466,7 +476,17 @@ struct LoginView: View {
     
     func InitialLoginAPI() async {
         // 初回ログインAPI
-        guard let url = URL(string: "https://www.emsdevelopers.com/v1/Auth/initial-login")
+        var API_path = ""
+        if(API == "Dev")
+        {
+            API_path = API_BaseURL_Dev + "v1/Auth/initial-login"
+        }
+        else
+        {
+            API_BaseURL_Dis + "v1/Auth/initial-login"
+        }
+        
+        guard let url = URL(string: API_path)
         else
         {
             return
@@ -533,7 +553,7 @@ struct LoginView: View {
                         {
                             MultiViewURL = BaseURL_Dis + CreateDir
                         }
-                        currentView = .web
+                        appState.currentView = .web
                     }
                 }
                 else
@@ -687,5 +707,5 @@ struct LoginView: View {
 }
 
 #Preview {
-    LoginView(currentView: .constant(.login))
+    LoginView()
 }

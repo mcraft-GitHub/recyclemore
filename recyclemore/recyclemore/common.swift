@@ -12,6 +12,7 @@ import SwiftUI
 let APP_VERSION = "1.0.3"
 // 接続先 Dev = 開発　Dis(それ以外) = 本番
 let Server = "Dev"
+let API = "Dev"
 
 // ユーザー情報構造体
 struct UserData: Codable{
@@ -32,6 +33,7 @@ enum AppViewMode {
     case splash
     case login
     case web
+    case blank
 }
 
 // モーダル種別 1:閉じる　2:リトライ 3:ログイン画面へ 4:アップデート 5:強制アップデート 6:オフライン
@@ -64,6 +66,9 @@ let ERROR_MES_SESSION = "セッションが切れたため、自動的にログ�
 var MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php" // 書き換えずにここを開くとPOSTMessage等が試せる
 var BaseURL_Dev = "https://blue-rock-0d4132800.3.azurestaticapps.net/"
 var BaseURL_Dis = "https://app.recyeclemore.jp/"
+
+var API_BaseURL_Dev = "https://www.emsdevelopers.com/"
+var API_BaseURL_Dis = "https://www.xxxx.com/" //TODO:現状不明
 
 let StartDir = "start"
 let HomeDir = "home"

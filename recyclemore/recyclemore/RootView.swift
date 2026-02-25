@@ -9,15 +9,18 @@ import SwiftUI
 
 // 画面の切り替わりを制御する、それぞれの画面からcurrentViewを切り替えることで表示が変わる
 struct RootView: View {
-    @State private var currentView: AppViewMode = .splash
+    @EnvironmentObject var appState: AppState
+    
     var body: some View {
-        switch currentView {
+        switch appState.currentView {
         case .splash:
-            SplashView(currentView: $currentView)
+            SplashView()
         case .login:
-            LoginView(currentView: $currentView)
+            LoginView()
         case .web:
-            WebContentView(currentView: $currentView)
+            WebContentView()
+        case .blank:
+            EmptyView()
         }
     }
 }

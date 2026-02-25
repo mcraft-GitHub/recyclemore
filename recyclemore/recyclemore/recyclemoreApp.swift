@@ -17,24 +17,13 @@ struct recyclemoreApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environmentObject(appState)
                 .onOpenURL { url in
                     print("SceneレベルでURL受信: \(url)")
                     
-                    // ベースとなるWebのドメイン
-                    let baseDomain = "https://example.com/viewer" // 好きなURLに置き換え
-                    
-                    // URLのパス部分
+                    // URLのパス部分(資料上はdir)
                     let host = url.host ?? ""
-                    let path = url.path // 例: /multi
-                    
-                    // host+pathを合わせた「パス扱い」にする
-                    let fullPath: String
-                    if !host.isEmpty && path.isEmpty {
-                        fullPath = "\(host)"
-                    } else {
-                        fullPath = path
-                    }
-                    
+
                     // クエリパラメータを辞書に変換
                     var queryDict: [String: String] = [:]
                     if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
@@ -45,11 +34,23 @@ struct recyclemoreApp: App {
                     }
                     
                     // Web用のURLを組み立てる
-                    var finalURL = "\(baseDomain)"
+                    var finalURL = ""
+                    
+                    if(Server == "Dev")
+                    {
+                        finalURL = "\(BaseURL_Dev)"
+                    }
+                    else
+                    {
+                        finalURL = "\(BaseURL_Dis)"
+                    }
+                    
                     for (key, value) in queryDict {
                         if(key == "dir")
                         {
-                            finalURL += "/\(value)"
+                            // エンコードされてるらしいのでデコードする
+                            let decodedValue = value.removingPercentEncoding ?? value
+                                    finalURL += "\(decodedValue)"
                         }
                     }
                     
@@ -68,8 +69,26 @@ struct recyclemoreApp: App {
                             count += 1
                         }
                     }
-                    // あくまで機能確認用の動作
-                    // TODO:finalURLをwebViewで開くなり、fullPathの値でアプリ側の画面を制御する
+                    
+                    print("これが遷移先")
+                    print(finalURL)
+                    
+                    // ログイン画面orWebViewの特定画面に遷移
+                    if(host == "multi")
+                    {
+                        print("WebViewに遷移！")
+                        MultiViewURL = finalURL
+                        // WebView TO WebView だとURLの変化を検知してくれないのでブランクを中継して確実に再描画されるようにする
+                        appState.currentView = .blank
+                        DispatchQueue.main.async {
+                            appState.currentView = .web
+                        }
+                    }
+                    else
+                    {
+                        print("ログイン画面に遷移！")
+                        appState.currentView = .login
+                    }
                 }
         }
     }
@@ -77,6 +96,7 @@ struct recyclemoreApp: App {
 
 class AppState: ObservableObject {
     @Published var isLoggedIn = false
+    @Published var currentView: AppViewMode = .splash
     
     init(){
         // 起動時にkeychainを確認する
