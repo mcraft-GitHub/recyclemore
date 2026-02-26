@@ -205,7 +205,7 @@ struct SplashView: View {
         }
         else
         {
-            API_BaseURL_Dis + "v1/App/get-app-version"
+            API_path = API_BaseURL_Dis + "v1/App/get-app-version"
         }
         
         guard let url = URL(string: API_path)
@@ -352,7 +352,7 @@ struct SplashView: View {
         }
         else
         {
-            API_BaseURL_Dis + "v1/Auth/auto-login"
+            API_path = API_BaseURL_Dis + "v1/Auth/auto-login"
         }
         
         guard let url = URL(string: API_path)

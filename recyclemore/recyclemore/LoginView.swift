@@ -300,7 +300,7 @@ struct LoginView: View {
         }
         else
         {
-            API_BaseURL_Dis + "v1/Auth/login"
+            API_path = API_BaseURL_Dis + "v1/Auth/login"
         }
         
         guard let url = URL(string: API_path)
@@ -483,7 +483,7 @@ struct LoginView: View {
         }
         else
         {
-            API_BaseURL_Dis + "v1/Auth/initial-login"
+            API_path = API_BaseURL_Dis + "v1/Auth/initial-login"
         }
         
         guard let url = URL(string: API_path)

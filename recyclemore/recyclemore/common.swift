@@ -68,7 +68,7 @@ var BaseURL_Dev = "https://blue-rock-0d4132800.3.azurestaticapps.net/"
 var BaseURL_Dis = "https://app.recyeclemore.jp/"
 
 var API_BaseURL_Dev = "https://www.emsdevelopers.com/"
-var API_BaseURL_Dis = "https://www.xxxx.com/" //TODO:現状不明
+var API_BaseURL_Dis = "https://api.recyclemore.jp/"
 
 let StartDir = "start"
 let HomeDir = "home"
