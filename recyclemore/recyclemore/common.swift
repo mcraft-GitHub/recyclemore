@@ -14,6 +14,10 @@ let APP_VERSION = "1.0.3"
 let Server = "Dev"
 let API = "Dev"
 
+// API実行時の認証キー　TODO:隠さなくていい？
+let API_KEY_DEV = "T9xLmQ2vZ8KfJr7NpYdHsAeRuC3WqV1B"    // 開発用
+let API_KEY_DIS = "VymjmkV3Ra4rfCzrPjiEC6RDPmSNqR9n"    // 本番用
+
 // ユーザー情報構造体
 struct UserData: Codable{
     var is_tel_verified: String
@@ -65,7 +69,7 @@ let ERROR_MES_SESSION = "セッションが切れたため、自動的にログ�
 // マルチ画面で表示するURL情報
 var MultiViewURL = "https://dev5.m-craft.com/harada/mc_kadai/SwiftTEST/WebViewtest.php" // 書き換えずにここを開くとPOSTMessage等が試せる
 var BaseURL_Dev = "https://blue-rock-0d4132800.3.azurestaticapps.net/"
-var BaseURL_Dis = "https://app.recyeclemore.jp/"
+var BaseURL_Dis = "https://app.recyclemore.jp/"
 
 var API_BaseURL_Dev = "https://www.emsdevelopers.com/"
 var API_BaseURL_Dis = "https://api.recyclemore.jp/"
@@ -77,9 +81,6 @@ let ForgetDir = "account/forget/1"
 
 // URLスキームでアプリを開いたことを示すフラグ
 var IsByURL = false
-
-// API実行時の認証キー
-let API_KEY = "T9xLmQ2vZ8KfJr7NpYdHsAeRuC3WqV1B"    // TODO:隠さなくていい？
 
 // 初回ログイン用の情報
 var initial_token: String = ""

@@ -294,13 +294,16 @@ struct LoginView: View {
     func LoginAPI() async {
         // ログインAPI
         var API_path = ""
+        var API_key = ""
         if(API == "Dev")
         {
             API_path = API_BaseURL_Dev + "v1/Auth/login"
+            API_key = API_KEY_DEV
         }
         else
         {
             API_path = API_BaseURL_Dis + "v1/Auth/login"
+            API_key = API_KEY_DIS
         }
         
         guard let url = URL(string: API_path)
@@ -326,7 +329,7 @@ struct LoginView: View {
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.addValue(API_KEY, forHTTPHeaderField: "x-recyclemore-api-key")
+            request.addValue(API_key, forHTTPHeaderField: "x-recyclemore-api-key")
             
             //ボディにJsonをセット
             request.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])
@@ -477,13 +480,16 @@ struct LoginView: View {
     func InitialLoginAPI() async {
         // 初回ログインAPI
         var API_path = ""
+        var API_key = ""
         if(API == "Dev")
         {
             API_path = API_BaseURL_Dev + "v1/Auth/initial-login"
+            API_key = API_KEY_DEV
         }
         else
         {
             API_path = API_BaseURL_Dis + "v1/Auth/initial-login"
+            API_key = API_KEY_DIS
         }
         
         guard let url = URL(string: API_path)
@@ -509,7 +515,7 @@ struct LoginView: View {
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.addValue(API_KEY, forHTTPHeaderField: "x-recyclemore-api-key")
+            request.addValue(API_key, forHTTPHeaderField: "x-recyclemore-api-key")
             
             //ボディにJsonをセット
             request.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])

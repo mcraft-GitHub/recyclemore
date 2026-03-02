@@ -199,13 +199,16 @@ struct SplashView: View {
         guard let url = URL(string: "https://api-recyclemore-cafzh7ewbngsdreu.japaneast-01.azurewebsites.net/v1/App/get-app-version")*/
         
         var API_path = ""
+        var API_key = ""
         if(API == "Dev")
         {
             API_path = API_BaseURL_Dev + "v1/App/get-app-version"
+            API_key = API_KEY_DEV
         }
         else
         {
             API_path = API_BaseURL_Dis + "v1/App/get-app-version"
+            API_key = API_KEY_DIS
         }
         
         guard let url = URL(string: API_path)
@@ -226,7 +229,7 @@ struct SplashView: View {
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.addValue(API_KEY, forHTTPHeaderField: "x-recyclemore-api-key")
+            request.addValue(API_key, forHTTPHeaderField: "x-recyclemore-api-key")
             
             //ボディにJsonをセット
             request.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])
@@ -346,13 +349,16 @@ struct SplashView: View {
     func AutoLoginAPI() async ->Bool {
         // ログインAPI
         var API_path = ""
+        var API_key = ""
         if(API == "Dev")
         {
             API_path = API_BaseURL_Dev + "v1/Auth/auto-login"
+            API_key = API_KEY_DEV
         }
         else
         {
             API_path = API_BaseURL_Dis + "v1/Auth/auto-login"
+            API_key = API_KEY_DIS
         }
         
         guard let url = URL(string: API_path)
@@ -373,7 +379,7 @@ struct SplashView: View {
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.addValue(API_KEY, forHTTPHeaderField: "x-recyclemore-api-key")
+            request.addValue(API_key, forHTTPHeaderField: "x-recyclemore-api-key")
             
             //ボディにJsonをセット
             request.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])
