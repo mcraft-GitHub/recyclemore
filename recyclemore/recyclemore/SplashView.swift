@@ -90,6 +90,16 @@ struct SplashView: View {
             // このパターンは別の導線で対処
             return
         }
+        
+        let isFirstLaunch = !UserDefaults.standard.bool(forKey: "hasLaunchedBefore")
+
+        if isFirstLaunch {
+            // 初回起動時(主に再インストール時)にログイン情報を削除する
+            print("初回起動")
+            KeychainHelper.shared.delete(key: "token")
+            KeychainHelper.shared.delete(key: "email")
+            UserDefaults.standard.set(true, forKey: "hasLaunchedBefore")
+        }
 
         print("step1")
         if(APIStep < 1)
