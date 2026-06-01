@@ -11,8 +11,8 @@ import SwiftUI
 //アプリバージョン
 let APP_VERSION = "1.0.3"
 // 接続先 Dev = 開発　Dis(それ以外) = 本番
-let Server = "Dev"
-let API = "Dev"
+let Server = "Dis"
+let API = "Dis"
 
 // API実行時の認証キー　TODO:隠さなくていい？
 let API_KEY_DEV = "T9xLmQ2vZ8KfJr7NpYdHsAeRuC3WqV1B"    // 開発用

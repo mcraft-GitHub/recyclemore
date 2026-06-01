@@ -1,0 +1,36 @@
+{
+  "fill" : {
+    "automatic-gradient" : "extended-srgb:0.00000,0.53333,1.00000,1.00000"
+  },
+  "groups" : [
+    {
+      "hidden-specializations" : [
+        {
+          "idiom" : "square",
+          "value" : false
+        }
+      ],
+      "layers" : [
+        {
+          "image-name" : "Icon-iOS-Default-1024x1024@1x_7 2.png",
+          "name" : "Icon-iOS-Default-1024x1024@1x_7 2"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "specular" : false,
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
