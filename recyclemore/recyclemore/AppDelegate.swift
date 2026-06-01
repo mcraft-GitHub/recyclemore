@@ -22,7 +22,7 @@ class AppDelegate: NSObject,UIApplicationDelegate,UNUserNotificationCenterDelega
         let AppvisorAppKey = "e59c36571a"
         
         // 実質的にSDKの初期化（内部でOSへの許可取りやトークンの設定まで行われる）
-        Appvisor.sharedInstance.enablePush(with:AppvisorAppKey, isDebug: true)
+        Appvisor.sharedInstance.enablePush(with:AppvisorAppKey, isDebug: false)
         Appvisor.sharedInstance.trackPush(with: userInfo)
         
         return true
