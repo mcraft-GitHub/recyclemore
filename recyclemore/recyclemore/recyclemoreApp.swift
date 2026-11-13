@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AppVisorSDK
 
 // アプリ本体、RootViewで画面を切り替えて表示内容を変える構造をしている
 @main
@@ -13,6 +14,8 @@ struct recyclemoreApp: App {
     @StateObject private var appState = AppState()
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
+    @SwiftUI.Environment(\.scenePhase) private var scenePhase
     
     var body: some Scene {
         WindowGroup {
@@ -91,6 +94,13 @@ struct recyclemoreApp: App {
                     }
                 }
         }
+        .onChange(of: scenePhase) { phase in
+                    print("scenePhase =", phase)
+                    if phase == .active {
+                            Appvisor.sharedInstance.clearBadgeNumber()
+                            print("activeでバッジクリア")
+                        }
+                }
     }
 }
 

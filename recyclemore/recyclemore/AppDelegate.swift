@@ -13,7 +13,7 @@ class AppDelegate: NSObject,UIApplicationDelegate,UNUserNotificationCenterDelega
     
     // 最初に呼ばれる関数
     func application(_ applications: UIApplication,didFinishLaunchingWithOptions launchOptions:[UIApplication.LaunchOptionsKey : Any]? = nil)-> Bool {
-
+        
         UNUserNotificationCenter.current().delegate = self
         
         let userInfo = launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification] as? [String:Any]
@@ -27,11 +27,16 @@ class AppDelegate: NSObject,UIApplicationDelegate,UNUserNotificationCenterDelega
         
         return true
     }
-
+    
     // アプリがフォアグラウンドに来た
     func applicationWillEnterForeground(_ application: UIApplication) {
         Appvisor.sharedInstance.clearBadgeNumber()
         print("戻った")
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        Appvisor.sharedInstance.clearBadgeNumber()
+        print("起動")
     }
     
     // デバイストークン登録処理
